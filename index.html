@@ -51,27 +51,18 @@ button:hover{background:#2e7d32}
 <button onclick="location.href='cadastro.html'">Cadastrar</button>
 </div>
 <script type="module">
-  // Firebase core
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-  import { getFirestore } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
-  // Configuração do Firebase
   const firebaseConfig = {
     apiKey: "AIzaSyAgKsk6jSIQk7AQ35xmVpnSn84pU8ca0g8",
     authDomain: "ecoacao-eda80.firebaseapp.com",
     projectId: "ecoacao-eda80",
-    storageBucket: "ecoacao-eda80.firebasestorage.app",
+    storageBucket: "ecoacao-eda80.appspot.com",
     messagingSenderId: "870282813916",
     appId: "1:870282813916:web:0105f475578aefc6c8af19"
   };
 
-  // Inicializa Firebase
-  const app = initializeApp(firebaseConfig);
-
-  // Inicializa Firestore
-  const db = getFirestore(app);
-
-  console.log("🔥 Firebase e Firestore conectados!");
+  initializeApp(firebaseConfig);
 </script>
 </body>
 </html>

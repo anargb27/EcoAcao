@@ -57,16 +57,17 @@ button{
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+import {
+  getAuth,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
 import {
   getFirestore,
   collection,
-  query,
-  where,
-  getDocs,
-  doc,
-  getDoc,
+  onSnapshot,
   updateDoc,
+  deleteDoc,
+  doc,
   increment
 } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
@@ -80,97 +81,57 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-const lista = document.getElementById("lista");
+const lista = document.getElementById("pendentes");
 
-/* 🔒 PROTEÇÃO DO ADMIN */
+/* 🔒 Auth admin */
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
-    alert("Faça login");
     window.location.href = "login.html";
     return;
   }
 
-  const ref = doc(db, "usuarios", user.uid);
-  const snap = await getDoc(ref);
-
+  const snap = await getDoc(doc(db, "usuarios", user.uid));
   if (!snap.exists() || snap.data().admin !== true) {
-    alert("Acesso restrito");
     window.location.href = "dashboard.html";
     return;
   }
 
-  carregarPendentes();
+  carregar();
 });
 
-/* 📥 CARREGAR AÇÕES PENDENTES */
-async function carregarPendentes() {
-  lista.innerHTML = "Carregando...";
-
-  const q = query(
-    collection(db, "acoes_pendentes"),
-    where("status", "==", "pendente")
-  );
-
-  const snap = await getDocs(q);
-  lista.innerHTML = "";
-
-  if (snap.empty) {
-    lista.innerHTML = "<p>🎉 Nenhuma ação pendente</p>";
-    return;
-  }
-
-  snap.forEach(docSnap => {
-    const a = docSnap.data();
-    const id = docSnap.id;
-
-    const card = document.createElement("div");
-    card.className = "card";
-
-    card.innerHTML = `
-      <h4>${a.acao}</h4>
-      <p><strong>Usuário:</strong> ${a.nome}</p>
-      <p><strong>Curso:</strong> ${a.curso}</p>
-      <p><strong>Pontos:</strong> ${a.pontos}</p>
-      <p>
-        <img src="${a.comprovanteBase64}" style="max-width:100%;border-radius:10px">
-      </p>
-      <div class="actions">
-        <button class="aprovar">Aprovar</button>
-        <button class="rejeitar">Rejeitar</button>
-      </div>
-    `;
-
-    card.querySelector(".aprovar").onclick = () => aprovar(id, a);
-    card.querySelector(".rejeitar").onclick = () => rejeitar(id);
-
-    lista.appendChild(card);
+/* 📥 Pendentes */
+function carregar() {
+  onSnapshot(collection(db, "acoes_pendentes"), (snap) => {
+    lista.innerHTML = "";
+    snap.forEach(d => {
+      const a = d.data();
+      lista.innerHTML += `
+        <div class="card">
+          <h3>${a.nome} – ${a.acao}</h3>
+          <p>Pontos: ${a.pontos}</p>
+          <img src="${a.comprovanteBase64}" style="max-width:100%;border-radius:10px">
+          <button onclick="aprovar('${d.id}', '${a.uid}', ${a.pontos})">Aprovar</button>
+          <button onclick="rejeitar('${d.id}')">Rejeitar</button>
+        </div>
+      `;
+    });
   });
 }
 
-/* ✅ APROVAR */
-async function aprovar(id, acao) {
-  if (!acao.uid) return;
-
-  await updateDoc(doc(db, "acoes_pendentes", id), {
-    status: "aprovada"
+window.aprovar = async (id, uid, pontos) => {
+  await updateDoc(doc(db, "usuarios", uid), {
+    pontos: increment(pontos)
   });
 
-  await updateDoc(doc(db, "usuarios", acao.uid), {
-    pontos: increment(acao.pontos)
-  });
+  await deleteDoc(doc(db, "acoes_pendentes", id));
+};
 
-  carregarPendentes();
-}
-
-/* ❌ REJEITAR */
-async function rejeitar(id) {
-  await updateDoc(doc(db, "acoes_pendentes", id), {
-    status: "rejeitada"
-  });
-
-  carregarPendentes();
-}
+window.rejeitar = async (id) => {
+  await deleteDoc(doc(db, "acoes_pendentes", id));
+};
 </script>
+
 </body>
 </html>
+
 

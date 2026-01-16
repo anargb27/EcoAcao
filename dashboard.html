@@ -124,11 +124,7 @@ footer{
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-import {
-  getAuth,
-  onAuthStateChanged,
-  signOut
-} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
 import {
   getFirestore,
   doc,
@@ -136,11 +132,9 @@ import {
   collection,
   query,
   where,
-  orderBy,
   getDocs
 } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
-/* 🔥 Firebase */
 const firebaseConfig = {
   apiKey: "AIzaSyAgKsk6jSIQk7AQ35xmVpnSn84pU8ca0g8",
   authDomain: "ecoacao-eda80.firebaseapp.com",
@@ -153,72 +147,94 @@ const db = getFirestore(app);
 
 const historicoDiv = document.getElementById("historico");
 
-/* 🔒 Proteção + Dados */
-onAuthStateChanged(auth, async (user)=>{
-  if(!user){
+/* 🔒 PROTEÇÃO DO DASHBOARD */
+onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    alert("Faça login para continuar");
     window.location.href = "login.html";
     return;
   }
 
-  /* Dados do usuário */
   const ref = doc(db, "usuarios", user.uid);
   const snap = await getDoc(ref);
+
+  if (!snap.exists()) {
+    alert("Usuário não encontrado");
+    await signOut(auth);
+    window.location.href = "login.html";
+    return;
+  }
+
   const dados = snap.data();
 
-  document.getElementById("nome").textContent = dados.nome;
-  document.getElementById("email").textContent = dados.email;
+  // Preenche dados do usuário
+  document.getElementById("nome").textContent = dados.nome || "-";
+  document.getElementById("email").textContent = dados.email || "-";
   document.getElementById("curso").textContent = dados.curso || "-";
   document.getElementById("pontos").textContent = dados.pontos || 0;
 
   carregarHistorico(user.uid);
 });
 
-/* 📋 Histórico */
-async function carregarHistorico(uid){
-  historicoDiv.innerHTML = "";
+/* 📋 HISTÓRICO DE AÇÕES */
+async function carregarHistorico(uid) {
+  historicoDiv.innerHTML = "Carregando...";
 
   const q = query(
     collection(db, "acoes_pendentes"),
-    where("uid", "==", uid),
-    orderBy("criadoEm", "desc")
+    where("uid", "==", uid)
   );
 
   const snap = await getDocs(q);
+  historicoDiv.innerHTML = "";
 
-  if(snap.empty){
+  if (snap.empty) {
     historicoDiv.innerHTML = "<p>Nenhuma ação enviada ainda 🌱</p>";
     return;
   }
 
-  snap.forEach(doc=>{
-    const a = doc.data();
+  snap.forEach(d => {
+    const a = d.data();
 
-    let statusEmoji = "⏳";
-    if(a.status === "aprovada") statusEmoji = "✅";
-    if(a.status === "rejeitada") statusEmoji = "❌";
+    let texto = "⏳ Aguardando validação";
+    let cor = "#ff9800";
 
-    const item = document.createElement("div");
-    item.style.borderBottom = "1px solid #ddd";
-    item.style.padding = "8px 0";
+    if (a.status === "aprovada") {
+      texto = "✅ Aprovada";
+      cor = "green";
+    }
+    if (a.status === "rejeitada") {
+      texto = "❌ Rejeitada (pode reenviar)";
+      cor = "red";
+    }
 
-    item.innerHTML = `
-      <strong>${statusEmoji} ${a.acao}</strong><br>
-      <small>${a.pontos} pts • ${a.impacto} impacto • ${a.status}</small>
+    const div = document.createElement("div");
+    div.style.borderLeft = `5px solid ${cor}`;
+    div.style.padding = "10px";
+    div.style.marginBottom = "10px";
+    div.style.background = "#f9f9f9";
+    div.style.borderRadius = "8px";
+
+    div.innerHTML = `
+      <strong>${a.acao}</strong><br>
+      <small>${a.pontos} pts • ${a.impacto}</small><br>
+      <span style="color:${cor};font-weight:bold">${texto}</span><br><br>
+      <a href="${a.comprovanteURL}" target="_blank">🔗 Ver comprovante</a>
     `;
 
-    historicoDiv.appendChild(item);
+    historicoDiv.appendChild(div);
   });
 }
 
-/* 🚪 Logout */
-window.logout = async function(){
+/* 🚪 LOGOUT */
+window.logout = async () => {
   await signOut(auth);
-  localStorage.removeItem("usuario");
   window.location.href = "login.html";
 };
 
-window.ir = function(p){ window.location.href = p; };
+/* 🔁 NAVEGAÇÃO */
+window.ir = p => window.location.href = p;
 </script>
-
 </body>
 </html>
+

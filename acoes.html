@@ -108,17 +108,17 @@ small{
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+import {
+  getAuth,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
 import {
   getFirestore,
-  collection,
-  addDoc,
-  serverTimestamp,
   doc,
   getDoc,
-  query,
-  where,
-  getDocs
+  collection,
+  addDoc,
+  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
 /* 🔥 Firebase */
@@ -135,7 +135,7 @@ const db = getFirestore(app);
 const lista = document.getElementById("listaAcoes");
 
 let usuarioLogado = null;
-let dadosUsuario = {};
+let dadosUsuario = null;
 const statusAcoes = {};
 
 /* 🌱 Ações */
@@ -162,17 +162,46 @@ const acoes = [
  {nome:'Participar de eventos de educação ambiental',pts:50,impacto:'Alto',icon:'🎓'}
 ];
 
-/* 🔒 Autenticação */
-onAuthStateChanged(auth, async (user)=>{
-  if(!user){
+ /* 🖼️ Compressão + Base64 */
+function imagemParaBase64Comprimida(file, maxWidth = 800, qualidade = 0.6) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.src = e.target.result;
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const scale = maxWidth / img.width;
+        canvas.width = maxWidth;
+        canvas.height = img.height * scale;
+        canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL("image/jpeg", qualidade));
+      };
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+/* 🔒 Auth */
+onAuthStateChanged(auth, async (user) => {
+  if (!user) {
     window.location.href = "login.html";
     return;
   }
 
   usuarioLogado = user;
-  dadosUsuario = (await getDoc(doc(db,"usuarios",user.uid))).data();
+  const ref = doc(db, "usuarios", user.uid);
+  const snap = await getDoc(ref);
 
-  await carregarStatusAcoes();
+  if (!snap.exists()) return;
+
+  dadosUsuario = snap.data();
+
+  if (dadosUsuario.admin === true) {
+    window.location.href = "admin.html";
+    return;
+  }
+
   renderAcoes();
 });
 
@@ -196,80 +225,46 @@ async function carregarStatusAcoes(){
   });
 }
 
-/* 🎨 Render */
-function renderAcoes(){
-  lista.innerHTML = "";
+/* 🎯 Render */
+function renderAcoes() {
+  const div = document.getElementById("listaAcoes");
+  div.innerHTML = "";
 
-  acoes.forEach((a,i)=>{
-    const status = statusAcoes[i];
-
-    let area = "";
-    if(status === "pendente"){
-      area = `<small style="color:#ff9800">⏳ Aguardando validação</small>`;
-    } else if(status === "aprovada"){
-      area = `<small style="color:green">✅ Ação aprovada</small>`;
-    } else {
-      area = `
-        <input type="file" accept="image/*" onchange="converterBase64(${i}, this)">
-        <button class="upload-btn" onclick="enviar(${i})">Enviar</button>
-      `;
-    }
-
-    const card = document.createElement("div");
-    card.className = "card";
-    card.innerHTML = `
-      <div class="${status === "aprovada" ? "icon validado" : "icon"}">${a.icon}</div>
-      <h4>${a.nome}</h4>
-      <p>${a.pts} pontos</p>
-      ${area}
+  acoes.forEach((a, i) => {
+    div.innerHTML += `
+      <div class="acao">
+        <h3>${a.nome}</h3>
+        <p>Pontos: ${a.pts}</p>
+        <input type="file" id="file-${i}" accept="image/*">
+        <button onclick="enviar(${i})">Enviar</button>
+      </div>
     `;
-
-    lista.appendChild(card);
   });
 }
 
-/* 🖼️ Base64 temporário */
-const imagensBase64 = {};
-
-/* 🔁 Converter imagem */
-window.converterBase64 = function(i, input){
-  const file = input.files[0];
-  if(!file) return;
-
-  if(file.size > 500000){
-    alert("Imagem muito grande. Use até 500 KB.");
-    input.value = "";
+/* 📤 Enviar */
+window.enviar = async function(i) {
+  const input = document.getElementById(`file-${i}`);
+  if (!input.files.length) {
+    alert("Selecione uma imagem");
     return;
   }
 
-  const reader = new FileReader();
-  reader.onload = () => imagensBase64[i] = reader.result;
-  reader.readAsDataURL(file);
-};
+  const base64 = await imagemParaBase64Comprimida(input.files[0]);
 
-/* 📤 Enviar ação */
-window.enviar = async function(i){
-  if(!imagensBase64[i]){
-    alert("Selecione uma imagem antes de enviar.");
-    return;
-  }
-
-  const a = acoes[i];
-
-  await addDoc(collection(db,"acoes_pendentes"),{
+  await addDoc(collection(db, "acoes_pendentes"), {
     uid: usuarioLogado.uid,
     nome: dadosUsuario.nome,
     curso: dadosUsuario.curso || "-",
-    acao: a.nome,
-    pontos: a.pts,
-    impacto: a.impacto,
-    comprovanteBase64: imagensBase64[i],
+    acao: acoes[i].nome,
+    pontos: acoes[i].pts,
+    impacto: acoes[i].impacto,
+    comprovanteBase64: base64,
     status: "pendente",
     criadoEm: serverTimestamp()
   });
 
-  statusAcoes[i] = "pendente";
-  renderAcoes();
+  alert("Ação enviada com sucesso 🌱");
 };
 
 /* 🚪 Logout */
@@ -280,4 +275,5 @@ window.logout = async ()=>{
 </script>
 </body>
 </html>
+
 

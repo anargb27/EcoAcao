@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Admin – EcoAção Acadêmica</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+  font-family: Arial, Helvetica, sans-serif;
+  background:#f4f8f6;
+  margin:0;
+}
+header{
+  background:#2e7d32;
+  color:#fff;
+  padding:20px;
+}
+main{
+  max-width:1100px;
+  margin:20px auto;
+  padding:0 16px;
+}
+.card{
+  background:#fff;
+  border-radius:16px;
+  padding:16px;
+  margin-bottom:16px;
+  box-shadow:0 6px 16px rgba(0,0,0,.08);
+}
+.actions{
+  display:flex;
+  gap:10px;
+  margin-top:10px;
+}
+button{
+  border:none;
+  padding:8px 14px;
+  border-radius:10px;
+  cursor:pointer;
+}
+.aprovar{background:#43a047;color:#fff}
+.rejeitar{background:#c62828;color:#fff}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>🛠️ Painel do Administrador</h1>
+  <p>Validação de ações sustentáveis</p>
+</header>
+
+<main>
+  <div id="lista"></div>
+</main>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import {
+  getAuth,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+import {
+  getFirestore,
+  collection,
+  query,
+  where,
+  getDocs,
+  doc,
+  updateDoc,
+  increment
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+/* 🔥 Firebase */
+const firebaseConfig = {
+  apiKey: "AIzaSyAgKsk6jSIQk7AQ35xmVpnSn84pU8ca0g8",
+  authDomain: "ecoacao-eda80.firebaseapp.com",
+  projectId: "ecoacao-eda80",
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const lista = document.getElementById("lista");
+
+/* 🔒 Proteção ADMIN */
+onAuthStateChanged(auth, async (user)=>{
+  if(!user){
+    window.location.href = "login.html";
+    return;
+  }
+
+  carregarPendentes();
+});
+
+/* 📥 Carregar ações pendentes */
+async function carregarPendentes(){
+  lista.innerHTML = "Carregando...";
+
+  const q = query(
+    collection(db, "acoes_pendentes"),
+    where("status", "==", "pendente")
+  );
+
+  const snap = await getDocs(q);
+
+  lista.innerHTML = "";
+
+  if(snap.empty){
+    lista.innerHTML = "<p>🎉 Nenhuma ação pendente</p>";
+    return;
+  }
+
+  snap.forEach(docSnap=>{
+    const a = docSnap.data();
+    const id = docSnap.id;
+
+    const card = document.createElement("div");
+    card.className = "card";
+
+    card.innerHTML = `
+      <div class="info">
+        <h4>${a.acao}</h4>
+        <p><strong>Usuário:</strong> ${a.nome}</p>
+        <p><strong>Curso:</strong> ${a.curso}</p>
+        <p><strong>Pontos:</strong> ${a.pontos}</p>
+
+        <div class="actions">
+          <button class="aprovar">Aprovar</button>
+          <button class="rejeitar">Rejeitar</button>
+        </div>
+      </div>
+    `;
+
+    card.querySelector(".aprovar").onclick = () => aprovar(id, a);
+    card.querySelector(".rejeitar").onclick = () => rejeitar(id);
+
+    lista.appendChild(card);
+  });
+}
+
+/* ✅ Aprovar ação */
+async function aprovar(id, acao){
+  // 1️⃣ marca ação como aprovada
+  await updateDoc(doc(db, "acoes_pendentes", id), {
+    status: "aprovada"
+  });
+
+  // 2️⃣ soma pontos no usuário
+  await updateDoc(doc(db, "usuarios", acao.uid), {
+    pontos: increment(acao.pontos)
+  });
+
+  alert("Ação aprovada ✅");
+  carregarPendentes();
+}
+
+/* ❌ Rejeitar ação */
+async function rejeitar(id){
+  await updateDoc(doc(db, "acoes_pendentes", id), {
+    status: "rejeitada"
+  });
+
+  alert("Ação rejeitada ❌");
+  carregarPendentes();
+}
+
+/* 🚪 Logout */
+window.logout = async function(){
+  await signOut(auth);
+  window.location.href = "login.html";
+};
+</script>
+
+</body>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cadastro – EcoAção Acadêmica</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial, Helvetica, sans-serif;
+  background:#f4f8f6;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+.box{
+  background:#fff;
+  padding:32px;
+  border-radius:16px;
+  width:100%;
+  max-width:400px;
+  box-shadow:0 10px 25px rgba(0,0,0,.1);
+}
+h1{
+  text-align:center;
+  color:#2e7d32;
+}
+input{
+  width:100%;
+  padding:12px;
+  margin:10px 0;
+  border-radius:10px;
+  border:1px solid #ccc;
+}
+button{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border:none;
+  border-radius:12px;
+  background:#2e7d32;
+  color:#fff;
+  font-size:16px;
+  cursor:pointer;
+}
+small{
+  display:block;
+  text-align:center;
+  margin-top:14px;
+}
+a{
+  color:#2e7d32;
+  font-weight:bold;
+  text-decoration:none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+  <h1>🌱 Cadastro</h1>
+
+  <input type="text" id="nome" placeholder="Nome completo">
+  <input type="email" id="email" placeholder="Email institucional">
+<input type="text" id="curso" placeholder="Curso">
+  <input type="password" id="senha" placeholder="Senha (mín. 6 caracteres)">
+
+  <button onclick="cadastrar()">Cadastrar</button>
+
+  <small>
+    Já tem conta? <a href="login.html">Entrar</a>
+  </small>
+</div>
+
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+// CONFIG
+const firebaseConfig = {
+  apiKey: "AIzaSyAgKsk6jSIQk7AQ35xmVpnSn84pU8ca0g8",
+  authDomain: "ecoacao-eda80.firebaseapp.com",
+  projectId: "ecoacao-eda80",
+  storageBucket: "ecoacao-eda80.firebasestorage.app",
+  messagingSenderId: "870282813916",
+  appId: "1:870282813916:web:0105f475578aefc6c8af19"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// CADASTRO
+window.cadastrar = async function(){
+  const nome = document.getElementById("nome").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const curso = document.getElementById("curso").value.trim();
+  const senha = document.getElementById("senha").value;
+
+  if(!nome || !curso || !email || !senha){
+    alert("Preencha todos os campos");
+    return;
+  }
+
+  if(senha.length < 6){
+    alert("A senha precisa ter no mínimo 6 caracteres");
+    return;
+  }
+
+  try{
+    const cred = await createUserWithEmailAndPassword(auth, email, senha);
+    const uid = cred.user.uid;
+
+    await setDoc(doc(db, "usuarios", uid), {
+  nome,
+  curso,
+  email,
+  pontos: 0,
+  admin: false,
+  criadoEm: new Date()
+});
+
+
+    alert("Cadastro realizado com sucesso!");
+    window.location.href = "login.html";
+
+  }catch(err){
+    alert("Erro: " + err.message);
+  }
+}
+</script>
+
+</body>
+</html>

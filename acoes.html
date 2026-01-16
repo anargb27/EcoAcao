@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ações – EcoAção Acadêmica</title>
+
+<style>
+:root{
+ --verde:#2e7d32;
+ --verde2:#43a047;
+ --bg:#f4f8f6;
+ --cinza:#e0e0e0;
+}
+*{box-sizing:border-box}
+body{
+ margin:0;
+ font-family:Arial,Helvetica,sans-serif;
+ background:var(--bg);
+ color:#333;
+}
+header{
+ background:linear-gradient(135deg,var(--verde),var(--verde2));
+ color:#fff;
+ padding:24px;
+ text-align:center;
+}
+nav{
+ display:flex;
+ gap:10px;
+ justify-content:center;
+ flex-wrap:wrap;
+ margin-top:10px;
+}
+nav button{
+ background:#1b5e20;
+ color:#fff;
+ border:none;
+ padding:10px 16px;
+ border-radius:12px;
+ cursor:pointer;
+ font-weight:bold;
+}
+section{
+ max-width:1200px;
+ margin:20px auto;
+ background:#fff;
+ padding:24px;
+ border-radius:18px;
+}
+.grid{
+ display:grid;
+ grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+ gap:18px;
+}
+.card{
+ border:1px solid var(--cinza);
+ border-radius:22px;
+ padding:18px;
+ text-align:center;
+ box-shadow:0 8px 20px rgba(0,0,0,.08);
+}
+.icon{
+ width:90px;
+ height:90px;
+ border-radius:50%;
+ background:#e0e0e0;
+ margin:0 auto 12px;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ font-size:36px;
+ filter:grayscale(1);
+ opacity:.35;
+ transition:.3s;
+}
+.icon.validado{
+ background:#c8e6c9;
+ filter:none;
+ opacity:1;
+}
+.badge{
+ display:inline-block;
+ padding:6px 14px;
+ border-radius:20px;
+ font-size:12px;
+ font-weight:bold;
+ margin:6px 0;
+}
+.baixo{background:#c8e6c9;color:#1b5e20}
+.medio{background:#fff9c4;color:#827717}
+.alto{background:#ffcdd2;color:#b71c1c}
+
+.filtros{
+ display:flex;
+ gap:12px;
+ margin-bottom:20px;
+ flex-wrap:wrap;
+}
+.chip{
+ padding:8px 16px;
+ border-radius:20px;
+ background:#e8f5e9;
+ color:#2e7d32;
+ font-weight:600;
+ cursor:pointer;
+ transition:.2s;
+}
+.chip:hover{background:#c8e6c9}
+.chip.ativo{
+ background:#2e7d32;
+ color:#fff;
+}
+
+.upload-btn{
+ display:inline-block;
+ margin-top:12px;
+ padding:8px 16px;
+ border-radius:20px;
+ background:#43a047;
+ color:#fff;
+ font-weight:600;
+ cursor:pointer;
+}
+.upload-btn:hover{background:#2e7d32}
+
+small{
+ display:block;
+ margin-top:8px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>🌱 Ações Sustentáveis</h1>
+<nav>
+<button onclick="irPara('dashboard.html')">Dashboard</button>
+<button onclick="irPara('ranking.html')">Ranking</button>
+<button onclick="logout()">Sair</button>
+</nav>
+</header>
+
+<section>
+<h2>Ações disponíveis</h2>
+
+<div class="filtros">
+  <span class="chip ativo" onclick="filtrarImpacto('Todos', this)">Todas</span>
+  <span class="chip" onclick="filtrarImpacto('Baixo', this)">Baixo impacto</span>
+  <span class="chip" onclick="filtrarImpacto('Médio', this)">Médio impacto</span>
+  <span class="chip" onclick="filtrarImpacto('Alto', this)">Alto impacto</span>
+</div>
+
+<div class="grid" id="listaAcoes"></div>
+</section>
+
+<script type="module">
+/* 🔥 Firebase imports */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  serverTimestamp,
+  doc,
+  getDoc
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-storage.js";
+
+/* 🔥 Config Firebase */
+const firebaseConfig = {
+  apiKey: "AIzaSyAgKsk6jSIQk7AQ35xmVpnSn84pU8ca0g8",
+  authDomain: "ecoacao-eda80.firebaseapp.com",
+  projectId: "ecoacao-eda80",
+  storageBucket: "ecoacao-eda80.appspot.com"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const storage = getStorage(app);
+
+/* 🔐 Usuário */
+let usuarioLogado = null;
+let dadosUsuario = {};
+
+/* 🔒 Proteção + carregar dados */
+onAuthStateChanged(auth, async (user)=>{
+  if(!user){
+    window.location.href = "login.html";
+    return;
+  }
+
+  usuarioLogado = user;
+
+  const refUser = doc(db, "usuarios", user.uid);
+  const snap = await getDoc(refUser);
+
+  if(snap.exists()){
+    dadosUsuario = snap.data();
+  }else{
+    alert("Dados do usuário não encontrados.");
+  }
+});
+
+/* 🌱 Ações */
+const acoes = [
+ {nome:'Separar corretamente resíduos recicláveis',pts:20,impacto:'Baixo',icon:'♻️',status:'inicial'},
+ {nome:'Utilizar sacolas reutilizáveis',pts:20,impacto:'Baixo',icon:'🛍️',status:'inicial'},
+ {nome:'Utilizar copos reutilizáveis',pts:20,impacto:'Baixo',icon:'🥤',status:'inicial'},
+ {nome:'Utilizar talheres reutilizáveis',pts:20,impacto:'Baixo',icon:'🍴',status:'inicial'},
+ {nome:'Reutilizar embalagens',pts:30,impacto:'Baixo',icon:'📦',status:'inicial'},
+ {nome:'Levar recicláveis a ponto de coleta',pts:40,impacto:'Médio',icon:'🚮',status:'inicial'},
+ {nome:'Priorizar produtos com embalagem sustentável',pts:40,impacto:'Médio',icon:'🛒',status:'inicial'},
+ {nome:'Utilizar transporte coletivo',pts:30,impacto:'Médio',icon:'🚌',status:'inicial'},
+ {nome:'Deslocar-se a pé',pts:30,impacto:'Médio',icon:'🚶',status:'inicial'},
+ {nome:'Compartilhar carona',pts:40,impacto:'Médio',icon:'🚗',status:'inicial'},
+ {nome:'Destinar pilhas e baterias corretamente',pts:50,impacto:'Alto',icon:'🔋',status:'inicial'},
+ {nome:'Destinar resíduos eletrônicos',pts:70,impacto:'Alto',icon:'💻',status:'inicial'},
+ {nome:'Produzir material artesanal reutilizando resíduos',pts:60,impacto:'Alto',icon:'🎨',status:'inicial'},
+ {nome:'Entregar óleo de cozinha em ponto de coleta',pts:80,impacto:'Alto',icon:'🛢️',status:'inicial'},
+ {nome:'Reutilizar água',pts:70,impacto:'Alto',icon:'💧',status:'inicial'},
+ {nome:'Utilizar bicicleta',pts:50,impacto:'Alto',icon:'🚲',status:'inicial'},
+ {nome:'Plantar muda ou árvore',pts:100,impacto:'Alto',icon:'🌳',status:'inicial'},
+ {nome:'Cuidar de horta caseira ou comunitária',pts:80,impacto:'Alto',icon:'🌱',status:'inicial'},
+ {nome:'Participar de mutirão de limpeza',pts:70,impacto:'Alto',icon:'🧹',status:'inicial'},
+ {nome:'Participar de eventos de educação ambiental',pts:50,impacto:'Alto',icon:'🎓',status:'inicial'}
+];
+
+const lista = document.getElementById("listaAcoes");
+
+/* 🖼️ Render */
+function renderAcoes(listaAcoes){
+  lista.innerHTML = "";
+  listaAcoes.forEach((a,i)=>{
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <div class="icon">${a.icon}</div>
+      <h4>${a.nome}</h4>
+      <p>${a.pts} pontos</p>
+      <span class="badge">${a.impacto}</span>
+      <label class="upload-btn">
+        📤 Enviar comprovante
+        <input type="file" hidden onchange="enviar(${i}, this)">
+      </label>
+    `;
+    lista.appendChild(card);
+  });
+}
+
+/* 📤 Enviar ação */
+window.enviar = async function(i, input){
+  if(!input.files.length) return;
+
+  try{
+    const file = input.files[0];
+    const acao = acoes[i];
+
+    const caminho = `comprovantes/${usuarioLogado.uid}/${Date.now()}_${file.name}`;
+    const storageRef = ref(storage, caminho);
+    await uploadBytes(storageRef, file);
+    const url = await getDownloadURL(storageRef);
+
+    await addDoc(collection(db, "acoes_pendentes"), {
+      uid: usuarioLogado.uid,
+      nome: dadosUsuario.nome || "Usuário",
+      curso: dadosUsuario.curso || "-",
+      acao: acao.nome,
+      pontos: acao.pts,
+      impacto: acao.impacto,
+      comprovanteURL: url,
+      status: "pendente",
+      criadoEm: serverTimestamp()
+    });
+
+    alert("Ação enviada com comprovante ✔️");
+  }catch(err){
+    console.error(err);
+    alert("Erro ao enviar ação");
+  }
+};
+
+renderAcoes(acoes);
+</script>

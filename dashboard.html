@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Dashboard – EcoAção Acadêmica</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+:root{
+  --verde:#2e7d32;
+  --verde2:#43a047;
+  --bg:#f4f8f6;
+  --cinza:#e0e0e0;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial, Helvetica, sans-serif;
+  background:var(--bg);
+  color:#333;
+}
+header{
+  background:linear-gradient(135deg,var(--verde),var(--verde2));
+  color:#fff;
+  padding:24px;
+}
+header h1{margin:0}
+nav{
+  margin-top:12px;
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+nav button{
+  background:#1b5e20;
+  color:#fff;
+  border:none;
+  padding:10px 16px;
+  border-radius:12px;
+  cursor:pointer;
+  font-weight:bold;
+}
+nav button:hover{opacity:.9}
+
+main{
+  max-width:1200px;
+  margin:20px auto;
+  padding:0 16px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:20px;
+}
+
+.card{
+  background:#fff;
+  border-radius:20px;
+  padding:20px;
+  box-shadow:0 8px 20px rgba(0,0,0,.08);
+}
+
+.card h3{margin-top:0;color:var(--verde)}
+
+.big{
+  font-size:36px;
+  font-weight:bold;
+  color:var(--verde);
+}
+
+footer{
+  text-align:center;
+  padding:20px;
+  color:#666;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>🌱 EcoAção Acadêmica</h1>
+  <nav>
+    <button onclick="ir('acoes.html')">Ações</button>
+    <button onclick="ir('ranking.html')">Ranking</button>
+    <button onclick="logout()">Sair</button>
+  </nav>
+</header>
+
+<main>
+
+  <div class="grid">
+
+    <div class="card">
+      <h3>Usuário</h3>
+      <p><strong>Nome:</strong> <span id="nome"></span></p>
+      <p><strong>Email:</strong> <span id="email"></span></p>
+      <p><strong>Curso:</strong> <span id="curso"></span></p>
+    </div>
+
+    <div class="card">
+      <h3>Pontuação</h3>
+      <div class="big" id="pontos">0</div>
+      <p>pontos acumulados</p>
+    </div>
+
+    <div class="card">
+      <h3>Status</h3>
+      <p id="status">🌱 Comece realizando ações sustentáveis!</p>
+    </div>
+
+  </div>
+<div class="card">
+  <h3>📋 Minhas ações</h3>
+  <div id="historico">Carregando...</div>
+</div>
+
+</main>
+
+<footer>
+  EcoAção Acadêmica © 2025
+</footer>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import {
+  getAuth,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  collection,
+  query,
+  where,
+  orderBy,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+/* 🔥 Firebase */
+const firebaseConfig = {
+  apiKey: "AIzaSyAgKsk6jSIQk7AQ35xmVpnSn84pU8ca0g8",
+  authDomain: "ecoacao-eda80.firebaseapp.com",
+  projectId: "ecoacao-eda80",
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const historicoDiv = document.getElementById("historico");
+
+/* 🔒 Proteção + Dados */
+onAuthStateChanged(auth, async (user)=>{
+  if(!user){
+    window.location.href = "login.html";
+    return;
+  }
+
+  /* Dados do usuário */
+  const ref = doc(db, "usuarios", user.uid);
+  const snap = await getDoc(ref);
+  const dados = snap.data();
+
+  document.getElementById("nome").textContent = dados.nome;
+  document.getElementById("email").textContent = dados.email;
+  document.getElementById("curso").textContent = dados.curso || "-";
+  document.getElementById("pontos").textContent = dados.pontos || 0;
+
+  carregarHistorico(user.uid);
+});
+
+/* 📋 Histórico */
+async function carregarHistorico(uid){
+  historicoDiv.innerHTML = "";
+
+  const q = query(
+    collection(db, "acoes_pendentes"),
+    where("uid", "==", uid),
+    orderBy("criadoEm", "desc")
+  );
+
+  const snap = await getDocs(q);
+
+  if(snap.empty){
+    historicoDiv.innerHTML = "<p>Nenhuma ação enviada ainda 🌱</p>";
+    return;
+  }
+
+  snap.forEach(doc=>{
+    const a = doc.data();
+
+    let statusEmoji = "⏳";
+    if(a.status === "aprovada") statusEmoji = "✅";
+    if(a.status === "rejeitada") statusEmoji = "❌";
+
+    const item = document.createElement("div");
+    item.style.borderBottom = "1px solid #ddd";
+    item.style.padding = "8px 0";
+
+    item.innerHTML = `
+      <strong>${statusEmoji} ${a.acao}</strong><br>
+      <small>${a.pontos} pts • ${a.impacto} impacto • ${a.status}</small>
+    `;
+
+    historicoDiv.appendChild(item);
+  });
+}
+
+/* 🚪 Logout */
+window.logout = async function(){
+  await signOut(auth);
+  localStorage.removeItem("usuario");
+  window.location.href = "login.html";
+};
+
+window.ir = function(p){ window.location.href = p; };
+</script>
+
+</body>
+</html>

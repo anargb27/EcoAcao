@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EcoAção Acadêmica</title>
+
+<style>
+body{
+ margin:0;
+ font-family:Arial,Helvetica,sans-serif;
+ background:linear-gradient(135deg,#2e7d32,#43a047);
+ color:#fff;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ height:100vh;
+}
+.card{
+ background:#ffffff;
+ color:#333;
+ padding:40px;
+ border-radius:20px;
+ max-width:420px;
+ text-align:center;
+ box-shadow:0 10px 30px rgba(0,0,0,.2);
+}
+h1{color:#2e7d32;margin-bottom:10px}
+p{margin-bottom:30px}
+button{
+ width:100%;
+ padding:12px;
+ margin:10px 0;
+ border:none;
+ border-radius:12px;
+ font-weight:bold;
+ cursor:pointer;
+ background:#43a047;
+ color:#fff;
+}
+button:hover{background:#2e7d32}
+</style>
+</head>
+
+<body>
+<div class="card">
+<h1>🌱 EcoAção Acadêmica</h1>
+<p>Transformando ações sustentáveis em impacto real dentro da universidade.</p>
+
+<button onclick="location.href='login.html'">Entrar</button>
+<button onclick="location.href='cadastro.html'">Cadastrar</button>
+</div>
+<script type="module">
+  // Firebase core
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+  import { getFirestore } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+  // Configuração do Firebase
+  const firebaseConfig = {
+    apiKey: "AIzaSyAgKsk6jSIQk7AQ35xmVpnSn84pU8ca0g8",
+    authDomain: "ecoacao-eda80.firebaseapp.com",
+    projectId: "ecoacao-eda80",
+    storageBucket: "ecoacao-eda80.firebasestorage.app",
+    messagingSenderId: "870282813916",
+    appId: "1:870282813916:web:0105f475578aefc6c8af19"
+  };
+
+  // Inicializa Firebase
+  const app = initializeApp(firebaseConfig);
+
+  // Inicializa Firestore
+  const db = getFirestore(app);
+
+  console.log("🔥 Firebase e Firestore conectados!");
+</script>
+</body>
+</html>

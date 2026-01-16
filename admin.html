@@ -132,7 +132,7 @@ async function carregarPendentes() {
       <p><strong>Curso:</strong> ${a.curso}</p>
       <p><strong>Pontos:</strong> ${a.pontos}</p>
       <p>
-        <a href="${a.comprovanteURL}" target="_blank">📎 Ver comprovante</a>
+        <img src="${a.comprovanteBase64}" style="max-width:100%;border-radius:10px">
       </p>
       <div class="actions">
         <button class="aprovar">Aprovar</button>
@@ -173,3 +173,4 @@ async function rejeitar(id) {
 </script>
 </body>
 </html>
+

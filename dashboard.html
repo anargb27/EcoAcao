@@ -1,142 +1,183 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<title>Dashboard – EcoAção Acadêmica</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard – EcoAção</title>
+    <style>
+        :root {
+            --verde-dark: #1b5e20;
+            --verde-primary: #2e7d32;
+            --verde-light: #e8f5e9;
+            --bg: #f0f2f5;
+            --white: #ffffff;
+            --shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
 
-<style>
-:root{
-  --verde:#2e7d32;
-  --verde2:#43a047;
-  --bg:#f4f8f6;
-  --cinza:#e0e0e0;
-}
-*{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:Arial, Helvetica, sans-serif;
-  background:var(--bg);
-  color:#333;
-}
-header{
-  background:linear-gradient(135deg,var(--verde),var(--verde2));
-  color:#fff;
-  padding:24px;
-}
-header h1{margin:0}
-nav{
-  margin-top:12px;
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-}
-nav button{
-  background:#1b5e20;
-  color:#fff;
-  border:none;
-  padding:10px 16px;
-  border-radius:12px;
-  cursor:pointer;
-  font-weight:bold;
-}
-nav button:hover{opacity:.9}
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: #333;
+            padding-bottom: 40px;
+        }
 
-main{
-  max-width:1200px;
-  margin:20px auto;
-  padding:0 16px;
-}
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--verde-dark), var(--verde-primary));
+            color: #fff;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+            flex-wrap: wrap;
+            gap: 15px;
+        }
 
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-  gap:20px;
-}
+        header h1 { margin: 0; font-size: 1.5rem; display: flex; align-items: center; gap: 10px; }
 
-.card{
-  background:#fff;
-  border-radius:20px;
-  padding:20px;
-  box-shadow:0 8px 20px rgba(0,0,0,.08);
-}
+        nav { display: flex; gap: 10px; }
+        
+        nav button {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+        nav button:hover { background: rgba(255,255,255,0.4); }
 
-.card h3{margin-top:0;color:var(--verde)}
+        /* Container Principal */
+        main {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
 
-.big{
-  font-size:36px;
-  font-weight:bold;
-  color:var(--verde);
-}
+        /* Resumo do Usuário (Topo) */
+        .user-summary {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            gap: 20px;
+        }
 
-footer{
-  text-align:center;
-  padding:20px;
-  color:#666;
-}
-</style>
+        .user-info h2 { margin: 0 0 5px 0; color: var(--verde-dark); }
+        .user-info p { margin: 2px 0; color: #666; font-size: 0.95rem; }
+        
+        .score-box {
+            text-align: center;
+            background: var(--verde-light);
+            padding: 15px 30px;
+            border-radius: 12px;
+            min-width: 120px;
+        }
+        .score-val { font-size: 2.5rem; font-weight: 800; color: var(--verde-primary); line-height: 1; }
+        .score-label { font-size: 0.9rem; color: var(--verde-dark); font-weight: 600; text-transform: uppercase; }
+
+        /* Grid de Histórico */
+        h3.section-title { color: #555; border-left: 5px solid var(--verde-primary); padding-left: 10px; margin-bottom: 20px; }
+
+        .historico-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .action-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+            border-left: 5px solid #ddd; /* Cor padrão pendente */
+        }
+
+        .action-card.aprovada { border-left-color: var(--verde-primary); }
+        .action-card.rejeitada { border-left-color: #d32f2f; }
+
+        .action-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        .action-title { font-weight: bold; font-size: 1.1rem; color: #333; margin: 0; }
+        .action-date { font-size: 0.8rem; color: #888; }
+        
+        .status-pill {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-top: 10px;
+        }
+        .st-pendente { background: #fff8e1; color: #f57f17; }
+        .st-aprovada { background: #e8f5e9; color: var(--verde-primary); }
+        .st-rejeitada { background: #ffebee; color: #c62828; }
+
+        .thumb-img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-top: 10px;
+            cursor: pointer;
+            background: #eee;
+        }
+
+        .empty-msg { text-align: center; color: #888; padding: 40px; grid-column: 1/-1; }
+    </style>
 </head>
-
 <body>
 
 <header>
-  <h1>🌱 EcoAção Acadêmica</h1>
-  <nav>
-    <button onclick="ir('acoes.html')">Ações</button>
-    <button onclick="ir('ranking.html')">Ranking</button>
-    <button onclick="logout()">Sair</button>
-  </nav>
+    <h1>🌱 EcoAção</h1>
+    <nav>
+        <button onclick="window.location.href='acoes.html'">Nova Ação</button>
+        <button onclick="window.location.href='ranking.html'">Ranking</button>
+        <button onclick="logout()">Sair</button>
+    </nav>
 </header>
 
 <main>
-
-  <div class="grid">
-
-    <div class="card">
-      <h3>Usuário</h3>
-      <p><strong>Nome:</strong> <span id="nome"></span></p>
-      <p><strong>Email:</strong> <span id="email"></span></p>
-      <p><strong>Curso:</strong> <span id="curso"></span></p>
+    <div class="user-summary">
+        <div class="user-info">
+            <h2 id="displayNome">Carregando...</h2>
+            <p>🎓 <span id="displayCurso">---</span></p>
+            <p>📧 <span id="displayEmail">---</span></p>
+        </div>
+        <div class="score-box">
+            <div class="score-val" id="displayPontos">0</div>
+            <div class="score-label">Pontos</div>
+        </div>
     </div>
 
-    <div class="card">
-      <h3>Pontuação</h3>
-      <div class="big" id="pontos">0</div>
-      <p>pontos acumulados</p>
+    <h3 class="section-title">Minhas Atividades Recentes</h3>
+    <div id="historico" class="historico-grid">
+        <p class="empty-msg">Carregando histórico...</p>
     </div>
-
-    <div class="card">
-      <h3>Status</h3>
-      <p id="status">🌱 Comece realizando ações sustentáveis!</p>
-    </div>
-
-  </div>
-<div class="card">
-  <h3>📋 Minhas ações</h3>
-  <div id="historico">Carregando...</div>
-</div>
-
 </main>
-
-<footer>
-  EcoAção Acadêmica © 2025
-</footer>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-import {
-  getAuth,
-  onAuthStateChanged,
-  signOut
-} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
-import {
-  getFirestore,
-  doc,
-  getDoc,
-  collection,
-  query,
-  where,
-  onSnapshot
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+import { 
+    getFirestore, 
+    doc, 
+    onSnapshot, 
+    collection, 
+    query, 
+    where,
+    orderBy 
 } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -149,69 +190,104 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-const lista = document.getElementById("historico");
+const elNome = document.getElementById("displayNome");
+const elCurso = document.getElementById("displayCurso");
+const elEmail = document.getElementById("displayEmail");
+const elPontos = document.getElementById("displayPontos");
+const elHistorico = document.getElementById("historico");
 
-/* 🔒 Proteção de rota */
+/* 🔒 Autenticação e Carregamento */
 onAuthStateChanged(auth, async (user) => {
-  if (!user) {
-    window.location.href = "login.html";
-    return;
-  }
-
-  const snap = await getDoc(doc(db, "usuarios", user.uid));
-  if (!snap.exists()) return;
-
-  if (snap.data().admin === true) {
-    window.location.href = "admin.html";
-    return;
-  }
-
-  carregar(user.uid);
-});
-
-/* 📊 Histórico */
-function carregar(uid) {
-  const q = query(
-    collection(db, "acoes_pendentes"),
-    where("uid", "==", uid)
-  );
-
-  onSnapshot(q, (snap) => {
-    lista.innerHTML = "";
-
-    if (snap.empty) {
-      lista.innerHTML = "<p>Nenhuma ação enviada ainda 🌱</p>";
-      return;
+    if (!user) {
+        window.location.href = "login.html";
+        return;
     }
 
-    snap.forEach(d => {
-      const a = d.data();
-      lista.innerHTML += `
-        <div class="card">
-          <h3>${a.acao}</h3>
-          <p>Status: ${a.status}</p>
-          ${a.comprovanteBase64 ? `
-            <img src="${a.comprovanteBase64}" style="max-width:200px;border-radius:8px">
-          ` : ""}
-        </div>
-      `;
+    // 1. Ouvir mudanças no PERFIL do usuário (Pontos, Nome, Curso) em Tempo Real
+    onSnapshot(doc(db, "usuarios", user.uid), (docSnap) => {
+        if (docSnap.exists()) {
+            const data = docSnap.data();
+
+            // Segurança: Se for admin, manda pro painel dele
+            if (data.admin === true) {
+                window.location.href = "admin.html";
+                return;
+            }
+
+            // Atualiza tela
+            elNome.innerText = data.nome || "Usuário";
+            elCurso.innerText = data.curso || "Curso não informado";
+            elEmail.innerText = user.email;
+            
+            // Animação simples nos pontos
+            elPontos.innerText = data.pontos || 0;
+        }
     });
-  });
+
+    // 2. Carregar HISTÓRICO de ações
+    carregarHistorico(user.uid);
+});
+
+/* 📊 Função para listar ações */
+function carregarHistorico(uid) {
+    const q = query(
+        collection(db, "acoes_pendentes"),
+        where("uid", "==", uid)
+        // orderBy("criadoEm", "desc") // Requer índice no Firebase, se der erro tire essa linha
+    );
+
+    onSnapshot(q, (querySnapshot) => {
+        elHistorico.innerHTML = "";
+
+        if (querySnapshot.empty) {
+            elHistorico.innerHTML = `<div class="empty-msg">Você ainda não enviou nenhuma ação. <br> Clique em <b>Nova Ação</b> para começar! 🚀</div>`;
+            return;
+        }
+
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            
+            // Tratamento de Status para Cores e Texto
+            let statusClass = "st-pendente";
+            let statusTexto = "Em Análise";
+            let borderClass = "";
+
+            if (data.status === "aprovada") {
+                statusClass = "st-aprovada";
+                statusTexto = "Aprovada (+"+data.pontos+")";
+                borderClass = "aprovada";
+            } else if (data.status === "rejeitada") {
+                statusClass = "st-rejeitada";
+                statusTexto = "Rejeitada";
+                borderClass = "rejeitada";
+            }
+
+            // Imagem (suporta campo antigo e novo)
+            const img = data.comprovanteBase64 || data.comprovante;
+
+            const card = `
+                <div class="action-card ${borderClass}">
+                    <div class="action-header">
+                        <div>
+                            <h4 class="action-title">${data.acao}</h4>
+                            <span class="status-pill ${statusClass}">${statusTexto}</span>
+                        </div>
+                    </div>
+                    ${data.motivoRejeicao ? `<p style="font-size:0.8rem; color:#c62828">Motivo: ${data.motivoRejeicao}</p>` : ''}
+                    
+                    ${img ? `<img src="${img}" class="thumb-img" onclick="window.open(this.src)">` : ''}
+                </div>
+            `;
+            elHistorico.innerHTML += card;
+        });
+    });
 }
 
-/* 🧭 NAVEGAÇÃO — ESSENCIAL */
-window.ir = (pagina) => {
-  window.location.href = pagina;
-};
-
-/* 🚪 LOGOUT */
+/* 🚪 Logout */
 window.logout = async () => {
-  await signOut(auth);
-  window.location.href = "login.html";
+    await signOut(auth);
+    window.location.href = "login.html";
 };
 </script>
 </body>
 </html>
-
-
-

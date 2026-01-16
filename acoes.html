@@ -1,279 +1,294 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ações – EcoAção Acadêmica</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ações – EcoAção Acadêmica</title>
+    <style>
+        :root {
+            --verde-dark: #1b5e20;
+            --verde-primary: #2e7d32;
+            --verde-light: #c8e6c9;
+            --bg: #f0f2f5;
+            --white: #ffffff;
+            --shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
 
-<style>
-:root{
- --verde:#2e7d32;
- --verde2:#43a047;
- --bg:#f4f8f6;
- --cinza:#e0e0e0;
-}
-*{box-sizing:border-box}
-body{
- margin:0;
- font-family:Arial,Helvetica,sans-serif;
- background:var(--bg);
- color:#333;
-}
-header{
- background:linear-gradient(135deg,var(--verde),var(--verde2));
- color:#fff;
- padding:24px;
- text-align:center;
-}
-nav{
- display:flex;
- gap:10px;
- justify-content:center;
- flex-wrap:wrap;
- margin-top:10px;
-}
-nav button{
- background:#1b5e20;
- color:#fff;
- border:none;
- padding:10px 16px;
- border-radius:12px;
- cursor:pointer;
- font-weight:bold;
-}
-section{
- max-width:1200px;
- margin:20px auto;
- background:#fff;
- padding:24px;
- border-radius:18px;
-}
-.grid{
- display:grid;
- grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
- gap:18px;
-}
-.card{
- border:1px solid var(--cinza);
- border-radius:22px;
- padding:18px;
- text-align:center;
- box-shadow:0 8px 20px rgba(0,0,0,.08);
-}
-.icon{
- width:90px;
- height:90px;
- border-radius:50%;
- background:#e0e0e0;
- margin:0 auto 12px;
- display:flex;
- align-items:center;
- justify-content:center;
- font-size:36px;
- filter:grayscale(1);
- opacity:.35;
- transition:.3s;
-}
-.icon.validado{
- background:#c8e6c9;
- filter:none;
- opacity:1;
-}
-.upload-btn{
- margin-top:10px;
-}
-small{
- display:block;
- margin-top:8px;
- font-weight:bold;
-}
-</style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: #333;
+            padding-bottom: 50px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--verde-dark), var(--verde-primary));
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav {
+            margin-top: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        nav button {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.4);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        nav button:hover { background: rgba(255,255,255,0.4); }
+
+        .container {
+            max-width: 1100px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        h2 { text-align: center; color: var(--verde-dark); margin-bottom: 30px; }
+
+        /* Grid de Cards */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--white);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: transform 0.2s;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card:hover { transform: translateY(-5px); }
+
+        .impacto {
+            font-size: 10px;
+            text-transform: uppercase;
+            padding: 4px 10px;
+            border-radius: 10px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .impacto-baixo { background: #e3f2fd; color: #1976d2; }
+        .impacto-médio { background: #fff3e0; color: #f57c00; }
+        .impacto-alto { background: #ffebee; color: #d32f2f; }
+
+        .icon { font-size: 40px; margin: 10px 0; }
+
+        .pts { font-weight: bold; color: var(--verde-primary); font-size: 1.1rem; }
+
+        .status-badge {
+            margin-top: 10px;
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .pendente { background: #fff9c4; color: #fbc02d; }
+        .aprovado { background: var(--verde-light); color: var(--verde-dark); }
+
+        input[type="file"] {
+            font-size: 0.8rem;
+            margin: 10px 0;
+            width: 100%;
+        }
+
+        .btn-enviar {
+            background: var(--verde-primary);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+        }
+
+        .btn-enviar:disabled { background: #ccc; cursor: not-allowed; }
+    </style>
 </head>
-
 <body>
 
 <header>
-<h1>🌱 Ações Sustentáveis</h1>
-<nav>
-<button onclick="window.location.href='dashboard.html'">Dashboard</button>
- <button onclick="window.location.href='ranking.html'">Ranking</button>
-<button onclick="logout()">Sair</button>
-</nav>
+    <h1>🌱 EcoAção</h1>
+    <nav>
+        <button onclick="window.location.href='dashboard.html'">Dashboard</button>
+        <button onclick="window.location.href='ranking.html'">Ranking</button>
+        <button id="btnLogout">Sair</button>
+    </nav>
 </header>
 
-<section>
-<h2>Ações disponíveis</h2>
-<div class="grid" id="listaAcoes"></div>
-</section>
+<div class="container">
+    <h2>Ações Disponíveis</h2>
+    <div class="grid" id="listaAcoes">
+        </div>
+</div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-import {
-  getAuth,
-  onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
-import {
-  getFirestore,
-  doc,
-  getDoc,
-  collection,
-  addDoc,
-  serverTimestamp
-} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, collection, addDoc, query, where, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
-/* 🔥 Firebase */
-const firebaseConfig = {
-  apiKey: "AIzaSyAgKsk6jSIQk7AQ35xmVpnSn84pU8ca0g8",
-  authDomain: "ecoacao-eda80.firebaseapp.com",
-  projectId: "ecoacao-eda80"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-const lista = document.getElementById("listaAcoes");
-
-let usuarioLogado = null;
-let dadosUsuario = null;
-const statusAcoes = {};
-
-/* 🌱 Ações */
-const acoes = [
- {nome:'Separar corretamente resíduos recicláveis',pts:20,impacto:'Baixo',icon:'♻️'},
- {nome:'Utilizar sacolas reutilizáveis',pts:20,impacto:'Baixo',icon:'🛍️'},
- {nome:'Utilizar copos reutilizáveis',pts:20,impacto:'Baixo',icon:'🥤'},
- {nome:'Utilizar talheres reutilizáveis',pts:20,impacto:'Baixo',icon:'🍴'},
- {nome:'Reutilizar embalagens',pts:30,impacto:'Baixo',icon:'📦'},
- {nome:'Levar recicláveis a ponto de coleta',pts:40,impacto:'Médio',icon:'🚮'},
- {nome:'Priorizar produtos com embalagem sustentável',pts:40,impacto:'Médio',icon:'🛒'},
- {nome:'Utilizar transporte coletivo',pts:30,impacto:'Médio',icon:'🚌'},
- {nome:'Deslocar-se a pé',pts:30,impacto:'Médio',icon:'🚶'},
- {nome:'Compartilhar carona',pts:40,impacto:'Médio',icon:'🚗'},
- {nome:'Destinar pilhas e baterias corretamente',pts:50,impacto:'Alto',icon:'🔋'},
- {nome:'Destinar resíduos eletrônicos',pts:70,impacto:'Alto',icon:'💻'},
- {nome:'Produzir material artesanal reutilizando resíduos',pts:60,impacto:'Alto',icon:'🎨'},
- {nome:'Entregar óleo de cozinha em ponto de coleta',pts:80,impacto:'Alto',icon:'🛢️'},
- {nome:'Reutilizar água',pts:70,impacto:'Alto',icon:'💧'},
- {nome:'Utilizar bicicleta',pts:50,impacto:'Alto',icon:'🚲'},
- {nome:'Plantar muda ou árvore',pts:100,impacto:'Alto',icon:'🌳'},
- {nome:'Cuidar de horta caseira ou comunitária',pts:80,impacto:'Alto',icon:'🌱'},
- {nome:'Participar de mutirão de limpeza',pts:70,impacto:'Alto',icon:'🧹'},
- {nome:'Participar de eventos de educação ambiental',pts:50,impacto:'Alto',icon:'🎓'}
-];
-
- /* 🖼️ Compressão + Base64 */
-function imagemParaBase64Comprimida(file, maxWidth = 800, qualidade = 0.6) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = e => {
-      const img = new Image();
-      img.src = e.target.result;
-      img.onload = () => {
-        const canvas = document.createElement("canvas");
-        const scale = maxWidth / img.width;
-        canvas.width = maxWidth;
-        canvas.height = img.height * scale;
-        canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
-        resolve(canvas.toDataURL("image/jpeg", qualidade));
-      };
+    const firebaseConfig = {
+        apiKey: "AIzaSyAgKsk6jSIQk7AQ35xmVpnSn84pU8ca0g8",
+        authDomain: "ecoacao-eda80.firebaseapp.com",
+        projectId: "ecoacao-eda80"
     };
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-}
-/* 🔒 Auth */
-onAuthStateChanged(auth, async (user) => {
-  if (!user) {
-    window.location.href = "login.html";
-    return;
-  }
 
-  usuarioLogado = user;
-  const ref = doc(db, "usuarios", user.uid);
-  const snap = await getDoc(ref);
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-  if (!snap.exists()) return;
+    let userGlobal = null;
+    let acoesStatus = {}; // Para rastrear o que já foi enviado
 
-  dadosUsuario = snap.data();
+    const acoes = [
+        {nome:'Separar resíduos recicláveis', pts:20, impacto:'Baixo', icon:'♻️'},
+        {nome:'Utilizar sacolas reutilizáveis', pts:20, impacto:'Baixo', icon:'🛍️'},
+        {nome:'Destinar resíduos eletrônicos', pts:70, impacto:'Alto', icon:'💻'},
+        {nome:'Plantar muda ou árvore', pts:100, impacto:'Alto', icon:'🌳'},
+        // Adicione as outras ações aqui...
+    ];
 
-  if (dadosUsuario.admin === true) {
-    window.location.href = "admin.html";
-    return;
-  }
+    // 1. Monitorar Auth
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            userGlobal = user;
+            await carregarStatusDoUsuario();
+            renderAcoes();
+        } else {
+            window.location.href = "login.html";
+        }
+    });
 
-  renderAcoes();
-});
-
-/* 🔄 Status das ações */
-async function carregarStatusAcoes(){
-  const q = query(
-    collection(db,"acoes_pendentes"),
-    where("uid","==",usuarioLogado.uid)
-  );
-
-  const snap = await getDocs(q);
-
-  snap.forEach(d=>{
-    const a = d.data();
-    const i = acoes.findIndex(x=>x.nome === a.acao);
-    if(i !== -1){
-      if(a.status === "aprovada") statusAcoes[i] = "aprovada";
-      if(a.status === "pendente") statusAcoes[i] = "pendente";
-      if(a.status === "rejeitada") delete statusAcoes[i];
+    // 2. Buscar no banco o que o usuário já enviou
+    async function carregarStatusDoUsuario() {
+        const q = query(collection(db, "acoes_pendentes"), where("uid", "==", userGlobal.uid));
+        const querySnapshot = await getDocs(q);
+        acoesStatus = {};
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            // Salva o status mais recente daquela ação
+            acoesStatus[data.acao] = data.status;
+        });
     }
-  });
-}
 
-/* 🎯 Render */
-function renderAcoes() {
-  const div = document.getElementById("listaAcoes");
-  div.innerHTML = "";
+    // 3. Renderizar com lógica de bloqueio
+    function renderAcoes() {
+        const grid = document.getElementById("listaAcoes");
+        grid.innerHTML = "";
 
-  acoes.forEach((a, i) => {
-    div.innerHTML += `
-      <div class="acao">
-        <h3>${a.nome}</h3>
-        <p>Pontos: ${a.pts}</p>
-        <input type="file" id="file-${i}" accept="image/*">
-        <button onclick="enviar(${i})">Enviar</button>
-      </div>
-    `;
-  });
-}
+        acoes.forEach((a, index) => {
+            const status = acoesStatus[a.nome]; // 'pendente', 'aprovada' ou undefined
+            let controleHTML = '';
 
-/* 📤 Enviar */
-window.enviar = async function(i) {
-  const input = document.getElementById(`file-${i}`);
-  if (!input.files.length) {
-    alert("Selecione uma imagem");
-    return;
-  }
+            if (status === 'pendente') {
+                controleHTML = `<div class="status-badge pendente">⏳ Aguardando Aprovação</div>`;
+            } else if (status === 'aprovada') {
+                controleHTML = `<div class="status-badge aprovado">✅ Ação Concluída</div>`;
+            } else {
+                // Se for 'rejeitada' ou não existir, permite enviar
+                controleHTML = `
+                    <input type="file" id="file-${index}" accept="image/*">
+                    <button class="btn-enviar" onclick="enviarAcao(${index})">Enviar Comprovante</button>
+                `;
+            }
 
-  const base64 = await imagemParaBase64Comprimida(input.files[0]);
+            grid.innerHTML += `
+                <div class="card">
+                    <div>
+                        <span class="impacto impacto-${a.impacto.toLowerCase()}">${a.impacto} Impacto</span>
+                        <div class="icon">${a.icon}</div>
+                        <h3>${a.nome}</h3>
+                        <p class="pts">+${a.pts} Pontos</p>
+                    </div>
+                    <div class="footer-card">
+                        ${controleHTML}
+                    </div>
+                </div>
+            `;
+        });
+    }
 
-  await addDoc(collection(db, "acoes_pendentes"), {
-    uid: usuarioLogado.uid,
-    nome: dadosUsuario.nome,
-    curso: dadosUsuario.curso || "-",
-    acao: acoes[i].nome,
-    pontos: acoes[i].pts,
-    impacto: acoes[i].impacto,
-    comprovanteBase64: base64,
-    status: "pendente",
-    criadoEm: serverTimestamp()
-  });
+    // 4. Compressão e Envio
+    window.enviarAcao = async (index) => {
+        const fileInput = document.getElementById(`file-${index}`);
+        if (!fileInput.files[0]) return alert("Por favor, selecione uma foto!");
 
-  alert("Ação enviada com sucesso 🌱");
-};
+        const acao = acoes[index];
+        
+        try {
+            const base64 = await comprimirImagem(fileInput.files[0]);
+            
+            await addDoc(collection(db, "acoes_pendentes"), {
+                uid: userGlobal.uid,
+                email: userGlobal.email,
+                acao: acao.nome,
+                pontos: acao.pts,
+                impacto: acao.impacto,
+                comprovante: base64,
+                status: "pendente",
+                dataEnvio: serverTimestamp()
+            });
 
-/* 🚪 Logout */
-window.logout = async ()=>{
-  await signOut(auth);
-  window.location.href="login.html";
-};
+            alert("Sucesso! Aguarde a validação do administrador.");
+            location.reload(); // Recarrega para atualizar os botões
+        } catch (err) {
+            console.error(err);
+            alert("Erro ao enviar. Tente novamente.");
+        }
+    };
+
+    function comprimirImagem(file) {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = (event) => {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 600; 
+                    const scaleSize = MAX_WIDTH / img.width;
+                    canvas.width = MAX_WIDTH;
+                    canvas.height = img.height * scaleSize;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    resolve(canvas.toDataURL('image/jpeg', 0.7)); // 0.7 é a qualidade
+                };
+            };
+        });
+    }
+
+    document.getElementById("btnLogout").onclick = () => signOut(auth);
+
 </script>
 </body>
 </html>
+
 
 

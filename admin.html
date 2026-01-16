@@ -68,7 +68,8 @@ import {
   updateDoc,
   deleteDoc,
   doc,
-  increment
+  increment,
+  getDoc
 } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -83,7 +84,7 @@ const db = getFirestore(app);
 
 const lista = document.getElementById("pendentes");
 
-/* 🔒 Auth admin */
+/* 🔒 Proteção ADMIN */
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
     window.location.href = "login.html";
@@ -99,25 +100,44 @@ onAuthStateChanged(auth, async (user) => {
   carregar();
 });
 
-/* 📥 Pendentes */
+/* 📥 Ações pendentes */
 function carregar() {
   onSnapshot(collection(db, "acoes_pendentes"), (snap) => {
     lista.innerHTML = "";
+
+    if (snap.empty) {
+      lista.innerHTML = "<p>Nenhuma ação pendente 🎉</p>";
+      return;
+    }
+
     snap.forEach(d => {
       const a = d.data();
+
       lista.innerHTML += `
         <div class="card">
           <h3>${a.nome} – ${a.acao}</h3>
-          <p>Pontos: ${a.pontos}</p>
-          <img src="${a.comprovanteBase64}" style="max-width:100%;border-radius:10px">
-          <button onclick="aprovar('${d.id}', '${a.uid}', ${a.pontos})">Aprovar</button>
-          <button onclick="rejeitar('${d.id}')">Rejeitar</button>
+          <p><strong>Pontos:</strong> ${a.pontos}</p>
+
+          ${
+            a.comprovanteBase64
+              ? `<img src="${a.comprovanteBase64}" style="max-width:100%;border-radius:10px;margin:10px 0">`
+              : `<p style="color:red">⚠️ Sem comprovante visual</p>`
+          }
+
+          <button onclick="aprovar('${d.id}', '${a.uid}', ${a.pontos})">
+            Aprovar
+          </button>
+
+          <button onclick="rejeitar('${d.id}')">
+            Rejeitar
+          </button>
         </div>
       `;
     });
   });
 }
 
+/* ✅ Aprovar */
 window.aprovar = async (id, uid, pontos) => {
   await updateDoc(doc(db, "usuarios", uid), {
     pontos: increment(pontos)
@@ -126,12 +146,13 @@ window.aprovar = async (id, uid, pontos) => {
   await deleteDoc(doc(db, "acoes_pendentes", id));
 };
 
+/* ❌ Rejeitar */
 window.rejeitar = async (id) => {
   await deleteDoc(doc(db, "acoes_pendentes", id));
 };
 </script>
-
 </body>
 </html>
+
 
 

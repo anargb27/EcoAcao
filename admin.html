@@ -1,137 +1,109 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<title>Admin – EcoAção Acadêmica</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <title>Admin – EcoAção Acadêmica</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --verde-dark: #1b5e20;
+            --verde-primary: #2e7d32;
+            --verde-light: #43a047;
+            --vermelho: #d32f2f;
+            --bg: #f0f2f5;
+            --shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
 
-<style>
-    :root {
-        --verde-dark: #1b5e20;
-        --verde-primary: #2e7d32;
-        --verde-light: #43a047;
-        --vermelho: #d32f2f;
-        --bg: #f0f2f5;
-        --shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
+        body {
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            margin: 0;
+            color: #333;
+            padding-bottom: 50px;
+        }
 
-    body {
-        font-family: 'Segoe UI', Roboto, sans-serif;
-        background: var(--bg);
-        margin: 0;
-        color: #333;
-        padding-bottom: 50px;
-    }
+        header {
+            background: linear-gradient(135deg, var(--verde-dark), var(--verde-primary));
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
 
-    header {
-        background: linear-gradient(135deg, var(--verde-dark), var(--verde-primary));
-        color: #fff;
-        padding: 20px;
-        text-align: center;
-        box-shadow: var(--shadow);
-        position: sticky;
-        top: 0;
-        z-index: 100;
-    }
+        .container {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
 
-    .container {
-        max-width: 1000px;
-        margin: 30px auto;
-        padding: 0 20px;
-    }
+        h2 { color: var(--verde-dark); border-bottom: 2px solid #ddd; padding-bottom: 10px; }
 
-    h2 { color: var(--verde-dark); border-bottom: 2px solid #ddd; padding-bottom: 10px; }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
 
-    /* Grid Responsivo */
-    .grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 20px;
-    }
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s;
+            overflow: hidden; /* EVITA QUE A IMAGEM VAZE */
+        }
 
-    .card {
-        background: #fff;
-        border-radius: 12px;
-        padding: 20px;
-        box-shadow: var(--shadow);
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        transition: transform 0.2s;
-    }
+        .card:hover { transform: translateY(-3px); }
 
-    .card:hover { transform: translateY(-3px); }
+        .user-info {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
 
-    .user-info {
-        font-size: 0.9rem;
-        color: #666;
-        margin-bottom: 10px;
-        border-bottom: 1px solid #eee;
-        padding-bottom: 5px;
-    }
+        .acao-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--verde-primary);
+            margin: 5px 0;
+        }
 
-    .acao-title {
-        font-size: 1.2rem;
-        font-weight: bold;
-        color: var(--verde-primary);
-        margin: 5px 0;
-    }
+        /* AJUSTE NA IMAGEM PARA FICAR SEMPRE ALINHADA */
+        .comprovante-img {
+            width: 100%;
+            height: 180px; /* Altura fixa para todos os cards */
+            object-fit: cover; /* Preenche o espaço sem distorcer ou vazar */
+            background: #000;
+            border-radius: 8px;
+            margin: 10px 0;
+            cursor: pointer;
+        }
 
-    .pontos-badge {
-        background: #e8f5e9;
-        color: var(--verde-dark);
-        padding: 4px 10px;
-        border-radius: 15px;
-        font-weight: bold;
-        font-size: 0.9rem;
-        display: inline-block;
-        margin-bottom: 10px;
-    }
+        .actions { display: flex; gap: 10px; margin-top: 15px; }
 
-    .comprovante-img {
-        width: 100%;
-        height: 200px;
-        object-fit: contain; /* Mostra a imagem inteira sem cortar */
-        background: #000;
-        border-radius: 8px;
-        margin: 10px 0;
-        cursor: pointer;
-    }
+        button {
+            flex: 1; border: none; padding: 12px; border-radius: 8px;
+            cursor: pointer; font-weight: bold; font-size: 1rem; transition: 0.3s;
+        }
 
-    .actions {
-        display: flex;
-        gap: 10px;
-        margin-top: 15px;
-    }
+        .btn-aprovar { background: var(--verde-light); color: white; }
+        .btn-aprovar:hover { background: var(--verde-dark); }
 
-    button {
-        flex: 1;
-        border: none;
-        padding: 12px;
-        border-radius: 8px;
-        cursor: pointer;
-        font-weight: bold;
-        font-size: 1rem;
-        transition: 0.3s;
-    }
-
-    .btn-aprovar { background: var(--verde-light); color: white; }
-    .btn-aprovar:hover { background: var(--verde-dark); }
-
-    .btn-rejeitar { background: #ffebee; color: var(--vermelho); border: 1px solid var(--vermelho); }
-    .btn-rejeitar:hover { background: var(--vermelho); color: white; }
-
-    .empty-state { text-align: center; color: #777; margin-top: 50px; font-size: 1.2rem; }
-</style>
+        .btn-rejeitar { background: #ffebee; color: var(--vermelho); border: 1px solid var(--vermelho); }
+        .btn-rejeitar:hover { background: var(--vermelho); color: white; }
+    </style>
 </head>
-
-<body>
-
-<header>
+<body id="adminBody" style="display:none;"> <header>
     <h1>🛡️ Painel Admin</h1>
-    <nav>
-        <button onclick="logout()" style="background:rgba(255,255,255,0.2); width:auto; padding: 5px 15px; font-size: 0.9rem; color: white;">Sair</button>
-    </nav>
+    <button onclick="logout()" style="background:rgba(255,255,255,0.2); border:none; color:white; padding: 5px 15px; border-radius:15px; cursor:pointer;">Sair</button>
 </header>
 
 <div class="container">
@@ -160,67 +132,49 @@
         if (!user) { window.location.href = "login.html"; return; }
         
         const snap = await getDoc(doc(db, "usuarios", user.uid));
-        
-        if (!snap.exists() || snap.data().admin !== true) {
+        if (snap.exists() && snap.data().admin === true) {
+            document.getElementById("adminBody").style.display = "block";
+            carregarPendentes();
+        } else {
             window.location.replace("dashboard.html");
-            return;
         }
-        
-        document.getElementById("adminBody").style.display = "block";
-        carregarPendentes();
     });
 
     function carregarPendentes() {
         const q = query(collection(db, "acoes_pendentes"), where("status", "==", "pendente"));
-        
         onSnapshot(q, (snapshot) => {
-            const container = document.getElementById("lista");
-            container.innerHTML = "";
-
-            if (snapshot.empty) {
-                container.innerHTML = `<div class="empty-state"><h3>Tudo em dia! ✅</h3><p>Não há novas fotos para validar.</p></div>`;
-                return;
-            }
-
+            const list = document.getElementById("listaPendentes");
+            list.innerHTML = snapshot.empty ? "<p>Nenhuma ação pendente.</p>" : "";
+            
             snapshot.forEach(d => {
                 const a = d.data();
                 const card = document.createElement("div");
                 card.className = "card";
                 card.innerHTML = `
-                    <div class="img-container" onclick="window.open('${a.comprovanteBase64}')">
-                        <img src="${a.comprovanteBase64}" class="img-val" title="Clique para ampliar">
+                    <div>
+                        <div class="user-info">👤 ${a.nome || 'Usuário'} | ${a.curso || 'S/C'}</div>
+                        <div class="acao-title">${a.acao}</div>
+                        <div style="color:var(--verde-dark); font-weight:bold">+${a.pontos} Pontos</div>
+                        <img src="${a.comprovanteBase64}" class="comprovante-img" onclick="window.open(this.src)">
                     </div>
-                    <div class="card-content">
-                        <span class="user-badge">👤 ${a.nome || 'Usuário'} | ${a.curso || 'S/C'}</span>
-                        <h3 class="acao-titulo">${a.acao}</h3>
-                        <div style="color:#666; font-size:0.9rem">Valor: <b>${a.pontos} pontos</b></div>
-                    </div>
-                    <div class="btns">
-                        <button class="btn-no" onclick="rejeitar('${d.id}')">REJEITAR</button>
-                        <button class="btn-ok" onclick="aprovar('${d.id}', '${a.uid}', ${a.pontos})">APROVAR</button>
-                    </div>
-                `;
-                container.appendChild(card);
+                    <div class="actions">
+                        <button class="btn-rejeitar" onclick="rejeitar('${d.id}')">Rejeitar</button>
+                        <button class="btn-aprovar" onclick="aprovar('${d.id}', '${a.uid}', ${a.pontos})">Aprovar</button>
+                    </div>`;
+                list.appendChild(card);
             });
         });
     }
 
     window.aprovar = async (did, uid, pts) => {
-        if(!confirm("Deseja aprovar e somar os pontos para o aluno?")) return;
-        try {
-            await updateDoc(doc(db, "acoes_pendentes", did), { status: "aprovada" });
-            await updateDoc(doc(db, "usuarios", uid), { pontos: increment(pts) });
-        } catch(e) { alert("Erro ao aprovar"); }
+        if(!confirm("Aprovar ação?")) return;
+        await updateDoc(doc(db, "acoes_pendentes", did), { status: "aprovada" });
+        await updateDoc(doc(db, "usuarios", uid), { pontos: increment(pts) });
     };
 
     window.rejeitar = async (id) => {
-        const m = prompt("Por que esta ação foi rejeitada? (O aluno verá este motivo)");
-        if (m) {
-            await updateDoc(doc(db, "acoes_pendentes", id), { 
-                status: "rejeitada", 
-                motivoRejeicao: m 
-            });
-        }
+        const m = prompt("Motivo da rejeição:");
+        if (m) await updateDoc(doc(db, "acoes_pendentes", id), { status: "rejeitada", motivoRejeicao: m });
     };
 
     window.logout = () => signOut(auth).then(() => location.href = "login.html");

@@ -166,9 +166,9 @@
     import { getFirestore, doc, onSnapshot, collection, query, where } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
     const firebaseConfig = {
-      apiKey: "AIzaSyAgKsk6jSIQk7AQ35xmVpnSn84pU8ca0g8",
-      authDomain: "ecoacao-eda80.firebaseapp.com",
-      projectId: "ecoacao-eda80"
+        apiKey: "AIzaSyAgKsk6jSIQk7AQ35xmVpnSn84pU8ca0g8",
+        authDomain: "ecoacao-eda80.firebaseapp.com",
+        projectId: "ecoacao-eda80"
     };
 
     const app = initializeApp(firebaseConfig);
@@ -181,43 +181,47 @@
             return;
         }
 
-        // CARREGA DADOS DO USUÁRIO
-        onSnapshot(doc(db, "usuarios", user.uid), (snap) => {
+        // --- BUSCA DADOS DO PERFIL ---
+        const userRef = doc(db, "usuarios", user.uid);
+        onSnapshot(userRef, (snap) => {
             if (snap.exists()) {
-                const data = snap.data();
-                // Verifique se os nomes abaixo batem com o que está no seu banco (Firestore)
-                document.getElementById("userName").innerText = data.nome || "Usuário";
-                document.getElementById("userCourse").innerText = data.curso || "Curso não informado";
-                document.getElementById("userPoints").innerText = data.pontos || 0;
-                document.getElementById("userEmail").innerText = user.email;
-            } else {
-                console.error("Documento do usuário não encontrado!");
+                const d = snap.data();
+                
+                // Mapeamento exato conforme você enviou do Firebase
+                document.getElementById("fieldNome").innerText = d.nome || "Estudante";
+                document.getElementById("fieldCurso").innerText = d.curso || "Não informado";
+                document.getElementById("fieldPontos").innerText = d.pontos || 0;
+                document.getElementById("fieldEmail").innerText = user.email;
             }
         });
 
-        // CARREGA HISTÓRICO
+        // --- BUSCA HISTÓRICO DE AÇÕES ---
         const q = query(collection(db, "acoes_pendentes"), where("uid", "==", user.uid));
         onSnapshot(q, (snapshot) => {
-            const grid = document.getElementById("historyGrid");
-            grid.innerHTML = "";
+            const container = document.getElementById("historyList");
+            container.innerHTML = "";
 
             if (snapshot.empty) {
-                grid.innerHTML = `<p class="empty-msg">Nenhuma ação registrada ainda.</p>`;
+                container.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: #999; padding: 40px;">Você ainda não registrou nenhuma ação. Comece agora!</p>`;
                 return;
             }
 
-            snapshot.forEach(doc => {
-                const acao = doc.data();
-                let tagClass = acao.status === 'aprovada' ? 'tag-aprovada' : acao.status === 'rejeitada' ? 'tag-rejeitada' : 'tag-pendente';
+            snapshot.forEach(docSnap => {
+                const acao = docSnap.data();
+                const card = document.createElement("div");
+                card.className = "action-item";
                 
-                grid.innerHTML += `
-                    <div class="h-card">
-                        <div class="status-tag ${tagClass}">${acao.status}</div>
-                        <h4>${acao.acao}</h4>
-                        <p style="font-size:0.85rem; color:#777">Pontos: ${acao.pontos}</p>
-                        ${acao.comprovanteBase64 ? `<img src="${acao.comprovanteBase64}">` : ''}
-                    </div>
+                // Define a classe do status
+                const statusClass = acao.status === 'aprovada' ? 'aprovada' : acao.status === 'rejeitada' ? 'rejeitada' : 'pendente';
+                
+                card.innerHTML = `
+                    <span class="badge ${statusClass}">${acao.status || 'pendente'}</span>
+                    <h4>${acao.acao}</h4>
+                    <p>Pontos da ação: <strong>${acao.pontos}</strong></p>
+                    ${acao.motivoRejeicao ? `<p style="color:red; margin-top:5px;">❌ ${acao.motivoRejeicao}</p>` : ''}
+                    ${acao.comprovanteBase64 ? `<img src="${acao.comprovanteBase64}" class="preview-img">` : ''}
                 `;
+                container.appendChild(card);
             });
         });
     });

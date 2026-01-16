@@ -2,132 +2,125 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>Ranking – EcoAção Acadêmica</title>
+<title>Ranking – EcoAção</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <style>
-body{
-  margin:0;
-  font-family:Arial, Helvetica, sans-serif;
-  background:#f4f8f6;
-}
-header{
-  background:#2e7d32;
-  color:#fff;
-  padding:20px;
-}
-header h1{margin:0}
-nav{
-  margin-top:10px;
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-}
-nav button{
-  background:#1b5e20;
-  color:#fff;
-  border:none;
-  padding:8px 14px;
-  border-radius:10px;
-  cursor:pointer;
-}
+    :root { --p: #1b5e20; --s: #43a047; --bg: #f4f7f6; }
 
-main{
-  max-width:900px;
-  margin:20px auto;
-  background:#fff;
-  padding:20px;
-  border-radius:18px;
-}
+    * { box-sizing: border-box; }
 
-.toggle{
-  display:flex;
-  gap:10px;
-  margin-bottom:16px;
-}
-.toggle button{
-  background:#e0e0e0;
-  color:#333;
-  border:none;
-  padding:8px 14px;
-  border-radius:10px;
-  cursor:pointer;
-  font-weight:bold;
-}
-.toggle button.ativo{
-  background:#2e7d32;
-  color:#fff;
-}
+    body { margin: 0; font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: #333; }
 
-table{
-  width:100%;
-  border-collapse:collapse;
-}
-th, td{
-  padding:12px;
-  text-align:left;
-}
-th{
-  background:#e8f5e9;
-}
-tr:nth-child(even){
-  background:#f9f9f9;
-}
-.rank{
-  font-weight:bold;
-  color:#2e7d32;
-}
+    /* HEADER (Igual ao Dashboard) */
+    header { 
+        background: var(--p); color: white; padding: 15px 5%; 
+        display: flex; justify-content: space-between; align-items: center; 
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+    }
+    header h1 { margin: 0; font-size: 1.2rem; display: flex; align-items: center; gap: 8px; }
+    
+    .nav-btns { display: flex; gap: 8px; }
+    .nav-btns button { 
+        background: rgba(255,255,255,0.2); border: none; color: white; 
+        padding: 8px 16px; border-radius: 20px; cursor: pointer; 
+        font-weight: 600; font-size: 0.9rem; transition: 0.2s;
+    }
+    .nav-btns button:hover { background: rgba(255,255,255,0.3); }
+
+    main { max-width: 800px; margin: 30px auto; padding: 0 20px; }
+
+    /* BOTÕES DE TROCA (Geral vs Mensal) */
+    .toggle-container {
+        display: flex; background: #e0e0e0; padding: 5px; 
+        border-radius: 30px; margin-bottom: 25px; width: fit-content; margin-left: auto; margin-right: auto;
+    }
+    .toggle-btn {
+        background: transparent; border: none; padding: 10px 25px; 
+        border-radius: 25px; cursor: pointer; font-weight: bold; color: #555;
+        transition: 0.3s;
+    }
+    .toggle-btn.ativo { background: white; color: var(--p); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+
+    /* TABELA ESTILIZADA */
+    .ranking-box {
+        background: white; border-radius: 20px; 
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05); overflow: hidden;
+    }
+
+    table { width: 100%; border-collapse: collapse; }
+    
+    th { text-align: left; padding: 18px 20px; color: #666; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid #eee; background: #fafafa; }
+    td { padding: 15px 20px; border-bottom: 1px solid #f0f0f0; vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+
+    /* Estilo das Colunas */
+    .col-rank { width: 60px; font-weight: 900; color: var(--p); font-size: 1.1rem; text-align: center; }
+    .col-info { display: flex; flex-direction: column; }
+    .nome-user { font-weight: bold; font-size: 1rem; color: #333; }
+    .curso-user { font-size: 0.8rem; color: #888; margin-top: 2px; }
+    .col-pts { text-align: right; font-weight: bold; color: #333; font-size: 1.1rem; white-space: nowrap; }
+
+    /* Destaque para o TOP 3 */
+    tr:nth-child(1) .col-rank { font-size: 1.5rem; } 
+    tr:hover { background-color: #f9fcf9; }
+
+    /* RESPONSIVIDADE */
+    @media (max-width: 600px) {
+        header { flex-direction: column; gap: 15px; padding: 15px; }
+        .nav-btns { width: 100%; justify-content: center; }
+        .nav-btns button { flex: 1; text-align: center; font-size: 0.8rem; }
+        
+        main { margin-top: 20px; padding: 0 10px; }
+        
+        th { padding: 15px; }
+        td { padding: 12px 15px; }
+        
+        /* Ajuste fino para caber na tela do celular */
+        .col-rank { width: 40px; font-size: 1rem; padding-right: 0; }
+        .nome-user { font-size: 0.95rem; }
+    }
 </style>
 </head>
 
 <body>
 
 <header>
-  <h1>🏆 Ranking EcoAção</h1>
-  <nav>
-    <button onclick="ir('dashboard.html')">Dashboard</button>
-    <button onclick="ir('acoes.html')">Ações</button>
-    <button onclick="logout()">Sair</button>
-  </nav>
+  <h1>🏆 Ranking</h1>
+  <div class="nav-btns">
+    <button onclick="ir('dashboard.html')">Início</button>
+    <button onclick="ir('acoes.html')">+ Ação</button>
+    <button onclick="logout()" style="background:#c62828;">Sair</button>
+  </div>
 </header>
 
 <main>
+    <div class="toggle-container">
+        <button id="btnGeral" class="toggle-btn ativo" onclick="mostrarGeral()">Ranking Geral</button>
+        <button id="btnMensal" class="toggle-btn" onclick="mostrarMensal()">Mensal</button>
+    </div>
 
-<div class="toggle">
-  <button id="btnGeral" class="ativo" onclick="mostrarGeral()">Ranking Geral</button>
-  <button id="btnMensal" onclick="mostrarMensal()">Ranking Mensal</button>
-</div>
-
-<table>
-  <thead>
-    <tr>
-      <th>#</th>
-      <th>Nome</th>
-      <th>Curso</th>
-      <th>Pontos</th>
-    </tr>
-  </thead>
-  <tbody id="ranking"></tbody>
-</table>
-
+    <div class="ranking-box">
+        <table>
+            <thead>
+                <tr>
+                    <th class="col-rank">#</th>
+                    <th>Estudante</th>
+                    <th style="text-align:right">Pontos</th>
+                </tr>
+            </thead>
+            <tbody id="ranking">
+                <tr><td colspan="3" style="text-align:center; padding:30px; color:#999;">Carregando...</td></tr>
+            </tbody>
+        </table>
+    </div>
 </main>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-import {
-  getAuth,
-  onAuthStateChanged,
-  signOut
-} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
-import {
-  getFirestore,
-  collection,
-  query,
-  orderBy,
-  onSnapshot
-} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+import { getFirestore, collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
-/* 🔥 Firebase */
+/* 🔥 Firebase Config */
 const firebaseConfig = {
   apiKey: "AIzaSyAgKsk6jSIQk7AQ35xmVpnSn84pU8ca0g8",
   authDomain: "ecoacao-eda80.firebaseapp.com",
@@ -177,8 +170,10 @@ function carregarRankingMensal(){
   btnMensal.classList.add("ativo");
   btnGeral.classList.remove("ativo");
 
-  const mes = new Date().toISOString().slice(0,7); // ex: 2026-01
+  // Pega o mês atual no formato YYYY-MM
+  const mes = new Date().toISOString().slice(0,7); 
 
+  // NOTA: Para isso funcionar, você precisa salvar os pontos em 'ranking_mensal/202X-XX/usuarios'
   const q = query(
     collection(db, "ranking_mensal", mes, "usuarios"),
     orderBy("pontos", "desc")
@@ -189,47 +184,54 @@ function carregarRankingMensal(){
   });
 }
 
-/* 🎖️ Renderização com medalhas */
+/* 🎖️ Renderização Otimizada para Celular */
 function renderTabela(snap){
   tabela.innerHTML = "";
   let posicao = 1;
+  let encontrou = false;
 
   snap.forEach(doc=>{
     const u = doc.data();
-    if(u.admin === true) return;
+    if(u.admin === true) return; // Pula admins
 
-    let medalha = "";
+    encontrou = true;
+    let medalha = posicao + "º";
     if(posicao === 1) medalha = "🥇";
     if(posicao === 2) medalha = "🥈";
     if(posicao === 3) medalha = "🥉";
 
     const tr = document.createElement("tr");
+    
+    // AQUI EU AJUSTEI O HTML GERADO PARA FICAR BONITO NO CELULAR
+    // Juntei Nome e Curso na mesma coluna
     tr.innerHTML = `
-      <td class="rank">${medalha} ${posicao}º</td>
-      <td>${u.nome}</td>
-      <td>${u.curso || "-"}</td>
-      <td>${u.pontos || 0}</td>
+      <td class="col-rank">${medalha}</td>
+      <td>
+        <div class="col-info">
+            <span class="nome-user">${u.nome}</span>
+            <span class="curso-user">${u.curso || "Curso não inf."}</span>
+        </div>
+      </td>
+      <td class="col-pts">${u.pontos || 0} pts</td>
     `;
     tabela.appendChild(tr);
     posicao++;
   });
 
-  if(posicao === 1){
-    tabela.innerHTML = "<tr><td colspan='4'>Nenhum dado disponível</td></tr>";
+  if(!encontrou){
+    tabela.innerHTML = "<tr><td colspan='3' style='text-align:center; padding:30px; color:#888;'>Nenhum registro encontrado neste período.</td></tr>";
   }
 }
 
-/* 🔀 Botões */
+/* 🔀 Globais para os botões HTML funcionarem */
 window.mostrarGeral = carregarRankingGeral;
 window.mostrarMensal = carregarRankingMensal;
-
-/* 🚪 Logout */
+window.ir = p => window.location.href = p;
 window.logout = async ()=>{
   await signOut(auth);
   window.location.href = "login.html";
 };
 
-window.ir = p => window.location.href = p;
 </script>
 </body>
 </html>

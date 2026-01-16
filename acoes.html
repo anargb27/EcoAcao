@@ -79,54 +79,13 @@ section{
  filter:none;
  opacity:1;
 }
-.badge{
- display:inline-block;
- padding:6px 14px;
- border-radius:20px;
- font-size:12px;
- font-weight:bold;
- margin:6px 0;
-}
-.baixo{background:#c8e6c9;color:#1b5e20}
-.medio{background:#fff9c4;color:#827717}
-.alto{background:#ffcdd2;color:#b71c1c}
-
-.filtros{
- display:flex;
- gap:12px;
- margin-bottom:20px;
- flex-wrap:wrap;
-}
-.chip{
- padding:8px 16px;
- border-radius:20px;
- background:#e8f5e9;
- color:#2e7d32;
- font-weight:600;
- cursor:pointer;
- transition:.2s;
-}
-.chip:hover{background:#c8e6c9}
-.chip.ativo{
- background:#2e7d32;
- color:#fff;
-}
-
 .upload-btn{
- display:inline-block;
- margin-top:12px;
- padding:8px 16px;
- border-radius:20px;
- background:#43a047;
- color:#fff;
- font-weight:600;
- cursor:pointer;
+ margin-top:10px;
 }
-.upload-btn:hover{background:#2e7d32}
-
 small{
  display:block;
  margin-top:8px;
+ font-weight:bold;
 }
 </style>
 </head>
@@ -136,62 +95,73 @@ small{
 <header>
 <h1>🌱 Ações Sustentáveis</h1>
 <nav>
-<button onclick="irPara('dashboard.html')">Dashboard</button>
-<button onclick="irPara('ranking.html')">Ranking</button>
+<button onclick="window.location.href='dashboard.html'">Dashboard</button>
 <button onclick="logout()">Sair</button>
 </nav>
 </header>
 
 <section>
 <h2>Ações disponíveis</h2>
-
-<div class="filtros">
-  <span class="chip ativo" onclick="filtrarImpacto('Todos', this)">Todas</span>
-  <span class="chip" onclick="filtrarImpacto('Baixo', this)">Baixo impacto</span>
-  <span class="chip" onclick="filtrarImpacto('Médio', this)">Médio impacto</span>
-  <span class="chip" onclick="filtrarImpacto('Alto', this)">Alto impacto</span>
-</div>
-
 <div class="grid" id="listaAcoes"></div>
 </section>
 
 <script type="module">
-/* 🔥 Firebase imports */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
 import {
   getFirestore,
   collection,
   addDoc,
   serverTimestamp,
   doc,
-  getDoc
+  getDoc,
+  query,
+  where,
+  getDocs
 } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
-import {
-  getStorage,
-  ref,
-  uploadBytes,
-  getDownloadURL
-} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-storage.js";
 
-/* 🔥 Config Firebase */
+/* 🔥 Firebase */
 const firebaseConfig = {
   apiKey: "AIzaSyAgKsk6jSIQk7AQ35xmVpnSn84pU8ca0g8",
   authDomain: "ecoacao-eda80.firebaseapp.com",
-  projectId: "ecoacao-eda80",
-  storageBucket: "ecoacao-eda80.appspot.com"
+  projectId: "ecoacao-eda80"
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
-const storage = getStorage(app);
 
-/* 🔐 Usuário */
+const lista = document.getElementById("listaAcoes");
+
 let usuarioLogado = null;
 let dadosUsuario = {};
+const statusAcoes = {};
 
-/* 🔒 Proteção + carregar dados */
+/* 🌱 Ações */
+const acoes = [
+ {nome:'Separar corretamente resíduos recicláveis',pts:20,impacto:'Baixo',icon:'♻️'},
+ {nome:'Utilizar sacolas reutilizáveis',pts:20,impacto:'Baixo',icon:'🛍️'},
+ {nome:'Utilizar copos reutilizáveis',pts:20,impacto:'Baixo',icon:'🥤'},
+ {nome:'Utilizar talheres reutilizáveis',pts:20,impacto:'Baixo',icon:'🍴'},
+ {nome:'Reutilizar embalagens',pts:30,impacto:'Baixo',icon:'📦'},
+ {nome:'Levar recicláveis a ponto de coleta',pts:40,impacto:'Médio',icon:'🚮'},
+ {nome:'Priorizar produtos com embalagem sustentável',pts:40,impacto:'Médio',icon:'🛒'},
+ {nome:'Utilizar transporte coletivo',pts:30,impacto:'Médio',icon:'🚌'},
+ {nome:'Deslocar-se a pé',pts:30,impacto:'Médio',icon:'🚶'},
+ {nome:'Compartilhar carona',pts:40,impacto:'Médio',icon:'🚗'},
+ {nome:'Destinar pilhas e baterias corretamente',pts:50,impacto:'Alto',icon:'🔋'},
+ {nome:'Destinar resíduos eletrônicos',pts:70,impacto:'Alto',icon:'💻'},
+ {nome:'Produzir material artesanal reutilizando resíduos',pts:60,impacto:'Alto',icon:'🎨'},
+ {nome:'Entregar óleo de cozinha em ponto de coleta',pts:80,impacto:'Alto',icon:'🛢️'},
+ {nome:'Reutilizar água',pts:70,impacto:'Alto',icon:'💧'},
+ {nome:'Utilizar bicicleta',pts:50,impacto:'Alto',icon:'🚲'},
+ {nome:'Plantar muda ou árvore',pts:100,impacto:'Alto',icon:'🌳'},
+ {nome:'Cuidar de horta caseira ou comunitária',pts:80,impacto:'Alto',icon:'🌱'},
+ {nome:'Participar de mutirão de limpeza',pts:70,impacto:'Alto',icon:'🧹'},
+ {nome:'Participar de eventos de educação ambiental',pts:50,impacto:'Alto',icon:'🎓'}
+];
+
+/* 🔒 Autenticação */
 onAuthStateChanged(auth, async (user)=>{
   if(!user){
     window.location.href = "login.html";
@@ -199,94 +169,113 @@ onAuthStateChanged(auth, async (user)=>{
   }
 
   usuarioLogado = user;
+  dadosUsuario = (await getDoc(doc(db,"usuarios",user.uid))).data();
 
-  const refUser = doc(db, "usuarios", user.uid);
-  const snap = await getDoc(refUser);
-
-  if(snap.exists()){
-    dadosUsuario = snap.data();
-  }else{
-    alert("Dados do usuário não encontrados.");
-  }
+  await carregarStatusAcoes();
+  renderAcoes();
 });
 
-/* 🌱 Ações */
-const acoes = [
- {nome:'Separar corretamente resíduos recicláveis',pts:20,impacto:'Baixo',icon:'♻️',status:'inicial'},
- {nome:'Utilizar sacolas reutilizáveis',pts:20,impacto:'Baixo',icon:'🛍️',status:'inicial'},
- {nome:'Utilizar copos reutilizáveis',pts:20,impacto:'Baixo',icon:'🥤',status:'inicial'},
- {nome:'Utilizar talheres reutilizáveis',pts:20,impacto:'Baixo',icon:'🍴',status:'inicial'},
- {nome:'Reutilizar embalagens',pts:30,impacto:'Baixo',icon:'📦',status:'inicial'},
- {nome:'Levar recicláveis a ponto de coleta',pts:40,impacto:'Médio',icon:'🚮',status:'inicial'},
- {nome:'Priorizar produtos com embalagem sustentável',pts:40,impacto:'Médio',icon:'🛒',status:'inicial'},
- {nome:'Utilizar transporte coletivo',pts:30,impacto:'Médio',icon:'🚌',status:'inicial'},
- {nome:'Deslocar-se a pé',pts:30,impacto:'Médio',icon:'🚶',status:'inicial'},
- {nome:'Compartilhar carona',pts:40,impacto:'Médio',icon:'🚗',status:'inicial'},
- {nome:'Destinar pilhas e baterias corretamente',pts:50,impacto:'Alto',icon:'🔋',status:'inicial'},
- {nome:'Destinar resíduos eletrônicos',pts:70,impacto:'Alto',icon:'💻',status:'inicial'},
- {nome:'Produzir material artesanal reutilizando resíduos',pts:60,impacto:'Alto',icon:'🎨',status:'inicial'},
- {nome:'Entregar óleo de cozinha em ponto de coleta',pts:80,impacto:'Alto',icon:'🛢️',status:'inicial'},
- {nome:'Reutilizar água',pts:70,impacto:'Alto',icon:'💧',status:'inicial'},
- {nome:'Utilizar bicicleta',pts:50,impacto:'Alto',icon:'🚲',status:'inicial'},
- {nome:'Plantar muda ou árvore',pts:100,impacto:'Alto',icon:'🌳',status:'inicial'},
- {nome:'Cuidar de horta caseira ou comunitária',pts:80,impacto:'Alto',icon:'🌱',status:'inicial'},
- {nome:'Participar de mutirão de limpeza',pts:70,impacto:'Alto',icon:'🧹',status:'inicial'},
- {nome:'Participar de eventos de educação ambiental',pts:50,impacto:'Alto',icon:'🎓',status:'inicial'}
-];
+/* 🔄 Status das ações */
+async function carregarStatusAcoes(){
+  const q = query(
+    collection(db,"acoes_pendentes"),
+    where("uid","==",usuarioLogado.uid)
+  );
 
-const lista = document.getElementById("listaAcoes");
+  const snap = await getDocs(q);
 
-/* 🖼️ Render */
-function renderAcoes(listaAcoes){
+  snap.forEach(d=>{
+    const a = d.data();
+    const i = acoes.findIndex(x=>x.nome === a.acao);
+    if(i !== -1){
+      if(a.status === "aprovada") statusAcoes[i] = "aprovada";
+      if(a.status === "pendente") statusAcoes[i] = "pendente";
+      if(a.status === "rejeitada") delete statusAcoes[i];
+    }
+  });
+}
+
+/* 🎨 Render */
+function renderAcoes(){
   lista.innerHTML = "";
-  listaAcoes.forEach((a,i)=>{
+
+  acoes.forEach((a,i)=>{
+    const status = statusAcoes[i];
+
+    let area = "";
+    if(status === "pendente"){
+      area = `<small style="color:#ff9800">⏳ Aguardando validação</small>`;
+    } else if(status === "aprovada"){
+      area = `<small style="color:green">✅ Ação aprovada</small>`;
+    } else {
+      area = `
+        <input type="file" accept="image/*" onchange="converterBase64(${i}, this)">
+        <button class="upload-btn" onclick="enviar(${i})">Enviar</button>
+      `;
+    }
+
     const card = document.createElement("div");
     card.className = "card";
     card.innerHTML = `
-      <div class="icon">${a.icon}</div>
+      <div class="${status === "aprovada" ? "icon validado" : "icon"}">${a.icon}</div>
       <h4>${a.nome}</h4>
       <p>${a.pts} pontos</p>
-      <span class="badge">${a.impacto}</span>
-      <label class="upload-btn">
-        📤 Enviar comprovante
-        <input type="file" hidden onchange="enviar(${i}, this)">
-      </label>
+      ${area}
     `;
+
     lista.appendChild(card);
   });
 }
 
-/* 📤 Enviar ação */
-window.enviar = async function(i, input){
-  if(!input.files.length) return;
+/* 🖼️ Base64 temporário */
+const imagensBase64 = {};
 
-  try{
-    const file = input.files[0];
-    const acao = acoes[i];
+/* 🔁 Converter imagem */
+window.converterBase64 = function(i, input){
+  const file = input.files[0];
+  if(!file) return;
 
-    const caminho = `comprovantes/${usuarioLogado.uid}/${Date.now()}_${file.name}`;
-    const storageRef = ref(storage, caminho);
-    await uploadBytes(storageRef, file);
-    const url = await getDownloadURL(storageRef);
-
-    await addDoc(collection(db, "acoes_pendentes"), {
-      uid: usuarioLogado.uid,
-      nome: dadosUsuario.nome || "Usuário",
-      curso: dadosUsuario.curso || "-",
-      acao: acao.nome,
-      pontos: acao.pts,
-      impacto: acao.impacto,
-      comprovanteURL: url,
-      status: "pendente",
-      criadoEm: serverTimestamp()
-    });
-
-    alert("Ação enviada com comprovante ✔️");
-  }catch(err){
-    console.error(err);
-    alert("Erro ao enviar ação");
+  if(file.size > 500000){
+    alert("Imagem muito grande. Use até 500 KB.");
+    input.value = "";
+    return;
   }
+
+  const reader = new FileReader();
+  reader.onload = () => imagensBase64[i] = reader.result;
+  reader.readAsDataURL(file);
 };
 
-renderAcoes(acoes);
+/* 📤 Enviar ação */
+window.enviar = async function(i){
+  if(!imagensBase64[i]){
+    alert("Selecione uma imagem antes de enviar.");
+    return;
+  }
+
+  const a = acoes[i];
+
+  await addDoc(collection(db,"acoes_pendentes"),{
+    uid: usuarioLogado.uid,
+    nome: dadosUsuario.nome,
+    curso: dadosUsuario.curso || "-",
+    acao: a.nome,
+    pontos: a.pts,
+    impacto: a.impacto,
+    comprovanteBase64: imagensBase64[i],
+    status: "pendente",
+    criadoEm: serverTimestamp()
+  });
+
+  statusAcoes[i] = "pendente";
+  renderAcoes();
+};
+
+/* 🚪 Logout */
+window.logout = async ()=>{
+  await signOut(auth);
+  window.location.href="login.html";
+};
 </script>
+</body>
+</html>

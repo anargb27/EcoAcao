@@ -67,25 +67,23 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+import {
+  getAuth,
+  signInWithEmailAndPassword
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAgKsk6jSIQk7AQ35xmVpnSn84pU8ca0g8",
   authDomain: "ecoacao-eda80.firebaseapp.com",
   projectId: "ecoacao-eda80",
-  storageBucket: "ecoacao-eda80.appspot.com",
-  messagingSenderId: "870282813916",
-  appId: "1:870282813916:web:0105f475578aefc6c8af19"
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const db = getFirestore(app);
 
 window.login = async function(){
   const email = document.getElementById("email").value.trim();
-  const senha = document.getElementById("senha").value;
+  const senha = document.getElementById("senha").value.trim();
 
   if(!email || !senha){
     alert("Preencha email e senha");
@@ -93,43 +91,16 @@ window.login = async function(){
   }
 
   try{
-    const cred = await signInWithEmailAndPassword(auth, email, senha);
-
-    const ref = doc(db, "usuarios", cred.user.uid);
-    const snap = await getDoc(ref);
-
-    if(!snap.exists()){
-      alert("Usuário não encontrado no banco");
-      return;
-    }
-
-    const dados = snap.data();
-
-    // salva no localStorage
-    localStorage.setItem("usuario", JSON.stringify({
-      uid: cred.user.uid,
-      ...dados
-    }));
-
-    // redireciona conforme perfil
-    if(dados.admin === true){
-      window.location.href = "admin.html";
-    }else{
-      window.location.href = "dashboard.html";
-    }
-
- catch(err){
-  if(err.code === "auth/wrong-password"){
-    alert("Senha incorreta");
-  }else if(err.code === "auth/user-not-found"){
-    alert("Usuário não encontrado");
-  }else{
-    alert("Erro no login");
+    await signInWithEmailAndPassword(auth, email, senha);
+    alert("Login OK");
+    window.location.href = "dashboard.html";
+  }catch(err){
+    console.error(err);
+    alert("Erro: " + err.code);
   }
-  console.error(err);
-}
 };
 </script>
 
 </body>
 </html>
+

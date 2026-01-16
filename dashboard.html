@@ -126,7 +126,8 @@ footer{
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
 import {
   getAuth,
-  onAuthStateChanged
+  onAuthStateChanged,
+  signOut
 } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
 import {
   getFirestore,
@@ -150,7 +151,7 @@ const db = getFirestore(app);
 
 const lista = document.getElementById("historico");
 
-/* 🔒 Auth */
+/* 🔒 Proteção de rota */
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
     window.location.href = "login.html";
@@ -177,20 +178,40 @@ function carregar(uid) {
 
   onSnapshot(q, (snap) => {
     lista.innerHTML = "";
+
+    if (snap.empty) {
+      lista.innerHTML = "<p>Nenhuma ação enviada ainda 🌱</p>";
+      return;
+    }
+
     snap.forEach(d => {
       const a = d.data();
       lista.innerHTML += `
         <div class="card">
           <h3>${a.acao}</h3>
           <p>Status: ${a.status}</p>
-          <img src="${a.comprovanteBase64}" style="max-width:200px;border-radius:8px">
+          ${a.comprovanteBase64 ? `
+            <img src="${a.comprovanteBase64}" style="max-width:200px;border-radius:8px">
+          ` : ""}
         </div>
       `;
     });
   });
 }
+
+/* 🧭 NAVEGAÇÃO — ESSENCIAL */
+window.ir = (pagina) => {
+  window.location.href = pagina;
+};
+
+/* 🚪 LOGOUT */
+window.logout = async () => {
+  await signOut(auth);
+  window.location.href = "login.html";
+};
 </script>
 </body>
 </html>
+
 
 

@@ -1,45 +1,32 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<title>Admin – EcoAção Acadêmica</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-    :root { --verde-dark: #1b5e20; --verde-primary: #2e7d32; --verde-light: #43a047; --vermelho: #d32f2f; --bg: #f0f2f5; --shadow: 0 4px 12px rgba(0,0,0,0.1); }
-    body { font-family: 'Segoe UI', Roboto, sans-serif; background: var(--bg); margin: 0; color: #333; padding-bottom: 50px; }
-    header { background: linear-gradient(135deg, var(--verde-dark), var(--verde-primary)); color: #fff; padding: 20px; text-align: center; box-shadow: var(--shadow); position: sticky; top: 0; z-index: 100; }
-    .container { max-width: 1000px; margin: 30px auto; padding: 0 20px; }
-    h2 { color: var(--verde-dark); border-bottom: 2px solid #ddd; padding-bottom: 10px; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
-    .card { background: #fff; border-radius: 12px; padding: 20px; box-shadow: var(--shadow); display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s; }
-    .card:hover { transform: translateY(-3px); }
-    .user-info { font-size: 0.9rem; color: #666; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
-    .acao-title { font-size: 1.2rem; font-weight: bold; color: var(--verde-primary); margin: 5px 0; }
-    .pontos-badge { background: #e8f5e9; color: var(--verde-dark); padding: 4px 10px; border-radius: 15px; font-weight: bold; font-size: 0.9rem; display: inline-block; margin-bottom: 10px; }
-    .comprovante-img { width: 100%; height: 200px; object-fit: contain; background: #000; border-radius: 8px; margin: 10px 0; cursor: pointer; }
-    .actions { display: flex; gap: 10px; margin-top: 15px; }
-    button { flex: 1; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1rem; transition: 0.3s; }
-    .btn-aprovar { background: var(--verde-light); color: white; }
-    .btn-aprovar:hover { background: var(--verde-dark); }
-    .btn-rejeitar { background: #ffebee; color: var(--vermelho); border: 1px solid var(--vermelho); }
-    .btn-rejeitar:hover { background: var(--vermelho); color: white; }
-    .empty-state { text-align: center; color: #777; margin-top: 50px; font-size: 1.2rem; }
-</style>
+    <meta charset="UTF-8">
+    <title>Admin – EcoAção</title>
+    <style>
+        :root { --p: #1b5e20; --bg: #f4f7f6; }
+        body { margin: 0; font-family: sans-serif; background: var(--bg); display: none; }
+        header { background: #111; color: white; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; }
+        .container { max-width: 1000px; margin: 30px auto; padding: 0 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .img-val { width: 100%; height: 200px; object-fit: contain; background: #000; border-radius: 10px; margin: 10px 0; }
+        .btns { display: flex; gap: 10px; }
+        button { flex: 1; padding: 10px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .btn-ok { background: #2e7d32; color: white; }
+        .btn-no { background: #fee; color: #c62828; border: 1px solid #c62828; }
+    </style>
 </head>
-<body>
+<body id="body">
 
 <header>
-    <h1>🛡️ Painel Admin</h1>
-    <nav>
-        <button onclick="logout()" style="background:rgba(255,255,255,0.2); width:auto; padding: 5px 15px; font-size: 0.9rem; color: white;">Sair</button>
-    </nav>
+    <div style="font-weight:bold">🛡️ ADMINISTRAÇÃO</div>
+    <button onclick="logout()" style="background:#444; color:white; border:none; padding:5px 15px; border-radius:15px; cursor:pointer;">Sair</button>
 </header>
 
 <div class="container">
-    <h2>Ações Pendentes de Aprovação</h2>
-    <div id="listaPendentes" class="grid">
-        <p style="text-align:center; width:100%">Carregando solicitações...</p>
-    </div>
+    <h2>Validações Pendentes</h2>
+    <div id="lista" class="grid"></div>
 </div>
 
 <script type="module">
@@ -61,46 +48,46 @@
         if (!user) { window.location.href = "login.html"; return; }
         const snap = await getDoc(doc(db, "usuarios", user.uid));
         
+        // SE NÃO FOR ADMIN, CHUTA PARA O DASHBOARD
         if (!snap.exists() || snap.data().admin !== true) {
             window.location.replace("dashboard.html");
             return;
         }
-        carregarPendentes();
-    });
-
-    function carregarPendentes() {
+        
+        // SE FOR ADMIN, MOSTRA A TELA
+        document.getElementById("body").style.display = "block";
+        
+        // Carrega pendentes
         const q = query(collection(db, "acoes_pendentes"), where("status", "==", "pendente"));
-        onSnapshot(q, (snap) => {
-            const list = document.getElementById("listaPendentes");
-            list.innerHTML = snap.empty ? `<p class="empty">Tudo validado! ✅</p>` : "";
-            snap.forEach(d => {
-                const acao = d.data();
-                const id = d.id;
+        onSnapshot(q, (s) => {
+            const l = document.getElementById("lista");
+            l.innerHTML = s.empty ? "Tudo limpo! ✅" : "";
+            s.forEach(d => {
+                const a = d.data();
                 const card = document.createElement("div");
-                card.className = "card-admin";
+                card.className = "card";
                 card.innerHTML = `
-                    <span class="user-tag">👤 ${acao.nome || 'Usuário'} | ${acao.curso || 'S/C'}</span>
-                    <div style="font-weight:bold; font-size:1.1rem">${acao.acao}</div>
-                    <div style="color:var(--secondary)">+${acao.pontos} Pontos</div>
-                    <img src="${acao.comprovanteBase64}" class="comprovante" onclick="window.open(this.src)">
-                    <div class="btn-group">
-                        <button class="btn-rejeitar" onclick="rejeitar('${id}')">Rejeitar</button>
-                        <button class="btn-aprovar" onclick="aprovar('${id}', '${acao.uid}', ${acao.pontos})">Aprovar</button>
+                    <small>Aluno: ${a.nome || '---'}</small>
+                    <h3>${a.acao}</h3>
+                    <img src="${a.comprovanteBase64}" class="img-val">
+                    <div class="btns">
+                        <button class="btn-no" onclick="rejeitar('${d.id}')">Rejeitar</button>
+                        <button class="btn-ok" onclick="aprovar('${d.id}', '${a.uid}', ${a.pontos})">Aprovar</button>
                     </div>`;
-                list.appendChild(card);
+                l.appendChild(card);
             });
         });
-    }
+    });
 
-    window.aprovar = async (docId, userId, pts) => {
-        if(!confirm("Confirmar aprovação?")) return;
-        await updateDoc(doc(db, "acoes_pendentes", docId), { status: "aprovada" });
-        await updateDoc(doc(db, "usuarios", userId), { pontos: increment(pts) });
+    window.aprovar = async (did, uid, pts) => {
+        if(!confirm("Aprovar?")) return;
+        await updateDoc(doc(db, "acoes_pendentes", did), { status: "aprovada" });
+        await updateDoc(doc(db, "usuarios", uid), { pontos: increment(pts) });
     };
 
     window.rejeitar = async (id) => {
-        const motivo = prompt("Motivo da rejeição:");
-        if (motivo !== null) await updateDoc(doc(db, "acoes_pendentes", id), { status: "rejeitada", motivoRejeicao: motivo });
+        const m = prompt("Motivo:");
+        if (m) await updateDoc(doc(db, "acoes_pendentes", id), { status: "rejeitada", motivoRejeicao: m });
     };
 
     window.logout = () => signOut(auth).then(() => location.href = "login.html");

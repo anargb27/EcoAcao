@@ -3,533 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ações – EcoAção Acadêmica</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <title>Ações – EcoAção</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-
     <style>
-        :root { 
-            --p: #2e7d32; 
-            --s: #43a047; 
-            --bg: #f4f8f6; 
-            --white: #ffffff; 
-            --shadow: 0 10px 25px rgba(0,0,0,0.05); 
-        }
+        :root { --p: #2e7d32; --s: #43a047; --bg: #f4f8f6; --white: #ffffff; }
         * { box-sizing: border-box; }
-        body { margin: 0; font-family: 'Poppins', sans-serif; background: var(--bg); color: #333; padding-bottom: 50px; }
+        body { margin: 0; font-family: 'Poppins', sans-serif; background: var(--bg); padding-bottom: 50px; }
         header { background: linear-gradient(135deg, #1b5e20, #2e7d32); color: #fff; padding: 20px 5%; display: flex; flex-direction: column; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.15); position: sticky; top: 0; z-index: 100; }
-        header h1 { margin: 0; font-size: 1.6rem; font-weight: 700; }
-        nav { margin-top: 15px; display: flex; justify-content: center; gap: 12px; }
-        nav button { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 18px; border-radius: 12px; cursor: pointer; font-family: 'Poppins', sans-serif; font-size: 0.85rem; transition: 0.3s; }
-        nav button:hover { background: rgba(255,255,255,0.3); transform: translateY(-2px); }
+        nav { margin-top: 15px; display: flex; gap: 10px; }
+        nav button { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 15px; border-radius: 10px; cursor: pointer; font-family: 'Poppins'; }
         .container { max-width: 1100px; margin: 40px auto; padding: 0 20px; }
-        h2 { text-align: center; color: var(--p); margin-bottom: 35px; font-weight: 700; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
-        .card { background: var(--white); border-radius: 24px; padding: 25px; text-align: center; box-shadow: var(--shadow); transition: all 0.3s ease; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid rgba(0,0,0,0.03); }
-        .card:hover { transform: translateY(-8px); box-shadow: 0 15px 35px rgba(0,0,0,0.1); }
-        .impacto { font-size: 10px; text-transform: uppercase; padding: 5px 12px; border-radius: 20px; font-weight: 700; display: inline-block; margin-bottom: 15px; letter-spacing: 0.5px; }
-        .impacto-baixo { background: #e3f2fd; color: #1976d2; }
-        .impacto-médio { background: #fff3e0; color: #ef6c00; }
-        .impacto-alto { background: #fbe9e7; color: #d84315; }
-        .icon { font-size: 45px; margin: 10px 0; display: block; }
-        h3 { font-size: 1.1rem; margin: 10px 0; color: #444; line-height: 1.4; min-height: 3em; display: flex; align-items: center; justify-content: center; }
-        .pts { font-weight: 700; color: var(--p); font-size: 1.2rem; background: #f0f7f0; display: inline-block; padding: 4px 15px; border-radius: 12px; margin-bottom: 20px; }
-        .status-badge { margin-top: 10px; padding: 12px; border-radius: 12px; font-size: 0.85rem; font-weight: 600; }
-        .pendente { background: #fffde7; color: #fbc02d; border: 1px solid #fff9c4; }
-        .aprovado { background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
-        input[type="file"] { font-size: 0.75rem; margin: 15px 0; width: 100%; color: #777; }
-        .btn-enviar { background: var(--p); color: white; border: none; padding: 12px; border-radius: 12px; cursor: pointer; width: 100%; font-weight: 600; font-family: 'Poppins', sans-serif; transition: 0.3s; box-shadow: 0 4px 12px rgba(46, 125, 50, 0.2); }
-        .btn-enviar:hover { background: var(--s); transform: scale(1.02); }
-        @media (max-width: 600px) { header h1 { font-size: 1.3rem; } .grid { gap: 15px; } }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .card { background: white; border-radius: 20px; padding: 20px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between; }
+        .pts { font-weight: 700; color: var(--p); background: #f0f7f0; padding: 5px 10px; border-radius: 10px; }
+        .btn-enviar { background: var(--p); color: white; border: none; padding: 12px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: 600; margin-top: 10px; }
+        .status-badge { padding: 10px; border-radius: 10px; font-size: 0.8rem; font-weight: 600; margin-top: 10px; }
+        .pendente { background: #fffde7; color: #fbc02d; }
+        .aprovado { background: #e8f5e9; color: #2e7d32; }
     </style>
 </head>
 <body>
-
 <header>
-    <h1>🌱 EcoAção Acadêmica</h1>
+    <h1 style="margin:0; font-size:1.5rem;">🌱 EcoAções Disponíveis</h1>
     <nav>
-        <button onclick="window.location.href='dashboard.html'">Dashboard</button>
-        <button onclick="window.location.href='ranking.html'">Ranking</button>
-        <button id="btnLogout" style="background: rgba(255,0,0,0.2);">Sair</button>
+        <button onclick="location.href='dashboard.html'">Dashboard</button>
+        <button onclick="signOut(auth)">Sair</button>
     </nav>
 </header>
-
 <div class="container">
-    <h2>Ações Disponíveis</h2>
     <div class="grid" id="listaAcoes"></div>
 </div>
-
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
     import { getFirestore, collection, addDoc, query, where, getDocs, serverTimestamp, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyAgKsk6jSIQk7AQ35xmVpnSn84pU8ca0g8",
-      authDomain: "ecoacao-eda80.firebaseapp.com",
-      projectId: "ecoacao-eda80"
-    };
-
+    const firebaseConfig = { apiKey: "AIzaSyAgKsk6jSIQk7AQ35xmVpnSn84pU8ca0g8", authDomain: "ecoacao-eda80.firebaseapp.com", projectId: "ecoacao-eda80" };
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
-
-    let userGlobal = null;
-    let acoesStatus = {}; 
-
-    // LISTA ATUALIZADA COM PALAVRAS-CHAVE PARA AS 10 CONQUISTAS
     const acoes = [
-        // ÁGUA
-        {nome:'Economia de Água: Reduzir tempo de banho',pts:20,impacto:'Baixo',icon:'💧'},
-        {nome:'Reutilizar Água da máquina ou chuva',pts:40,impacto:'Médio',icon:'🪣'},
-        // ENERGIA
-        {nome:'Energia: Apagar luzes desnecessárias',pts:20,impacto:'Baixo',icon:'💡'},
-        {nome:'Energia: Retirar aparelhos do standby',pts:30,impacto:'Baixo',icon:'🔌'},
-        // RESÍDUOS / RECICLAGEM
-        {nome:'Reciclar: Separar resíduos corretamente',pts:20,impacto:'Baixo',icon:'♻️'},
-        {nome:'Entregar óleo de cozinha para Reciclar',pts:50,impacto:'Alto',icon:'🛢️'},
-        // PLANTAS
-        {nome:'Plantar uma muda ou árvore',pts:100,impacto:'Alto',icon:'🌳'},
-        {nome:'Cuidar de horta ou plantas caseiras',pts:50,impacto:'Médio',icon:'🌱'},
-        // SOCIAL / CONSCIENTIZAÇÃO
-        {nome:'Social: Falei com amigos sobre o EcoAção',pts:40,impacto:'Médio',icon:'📢'},
-        {nome:'Social: Postar dica de sustentabilidade',pts:30,impacto:'Baixo',icon:'📱'},
-        // LIMPEZA
-        {nome:'Limpeza: Coleta de lixo em local público',pts:50,impacto:'Médio',icon:'🧹'},
-        {nome:'Limpeza: Participar de mutirão ecológico',pts:80,impacto:'Alto',icon:'🤝'},
-        // PAPEL
-        {nome:'Papel: Utilizar rascunhos para anotar',pts:20,impacto:'Baixo',icon:'📄'},
-        {nome:'Papel: Optar por documentos digitais',pts:20,impacto:'Baixo',icon:'💻'},
-        // TRANSPORTE
-        {nome:'Transporte: Compartilhar carona',pts:40,impacto:'Médio',icon:'🚗'},
-        {nome:'Transporte: Usar bicicleta ou ir a pé',pts:50,impacto:'Alto',icon:'🚲'},
-        // PLÁSTICO
-        {nome:'Plástico: Substituir copo descartável',pts:30,impacto:'Médio',icon:'🥤'},
-        {nome:'Plástico: Usar sacolas reutilizáveis',pts:20,impacto:'Baixo',icon:'🛍️'},
-        // OUTROS (MANTIDOS)
-        {nome:'Destinar pilhas e baterias corretamente',pts:50,impacto:'Alto',icon:'🔋'},
-        {nome:'Destinar resíduos eletrônicos',pts:70,impacto:'Alto',icon:'🖥️'}
+        {nome:'Água: Economizar no banho',pts:20,icon:'💧'},
+        {nome:'Energia: Apagar luzes vadias',pts:20,icon:'💡'},
+        {nome:'Recicla: Separar o lixo',pts:20,icon:'♻️'},
+        {nome:'Planta: Plantar uma muda',pts:100,icon:'🌳'},
+        {nome:'Social: Convidar um amigo',pts:40,icon:'📢'},
+        {nome:'Limpeza: Coleta em área verde',pts:50,icon:'🧹'},
+        {nome:'Papel: Usar rascunhos',pts:20,icon:'📄'},
+        {nome:'Transporte: Carona ou Bike',pts:40,icon:'🚲'},
+        {nome:'Plástico: Copo reutilizável',pts:30,icon:'🥤'},
+        {nome:'Recicla: Óleo de cozinha',pts:50,icon:'🛢️'}
     ];
-
-    onAuthStateChanged(auth, async (user) => {
-        if (user) {
-            userGlobal = user;
-            const snap = await getDoc(doc(db, "usuarios", user.uid));
-            if (snap.exists() && snap.data().admin === true) {
-                 window.location.href = "admin.html";
-                 return;
-            }
-            await carregarStatusDoUsuario();
-            renderAcoes();
-        } else {
-            window.location.href = "login.html";
-        }
-    });
-
-    async function carregarStatusDoUsuario() {
-        const q = query(collection(db, "acoes_pendentes"), where("uid", "==", userGlobal.uid));
-        const querySnapshot = await getDocs(q);
-        acoesStatus = {};
-        querySnapshot.forEach((doc) => {
-            const data = doc.data();
-            acoesStatus[data.acao] = data.status;
-        });
-    }
-
-    function renderAcoes() {
+    onAuthStateChanged(auth, async user => {
+        if (!user) { location.href="login.html"; return; }
+        const q = query(collection(db, "acoes_pendentes"), where("uid", "==", user.uid));
+        const snap = await getDocs(q);
+        const statusMap = {};
+        snap.forEach(d => statusMap[d.data().acao] = d.data().status);
         const grid = document.getElementById("listaAcoes");
-        grid.innerHTML = "";
-        acoes.forEach((a, index) => {
-            const status = acoesStatus[a.nome];
-            let controleHTML = '';
-            if (status === 'pendente') {
-                controleHTML = `<div class="status-badge pendente">⏳ Aguardando Aprovação</div>`;
-            } else if (status === 'aprovada') {
-                controleHTML = `<div class="status-badge aprovado">✅ Ação Concluída</div>`;
-            } else {
-                controleHTML = `
-                    <input type="file" id="file-${index}" accept="image/*">
-                    <button class="btn-enviar" onclick="enviarAcao(${index})">Enviar Comprovante</button>
-                    ${status === 'rejeitada' ? '<small style="color:red; display:block; margin-top:5px">Rejeitado. Tente novamente.</small>' : ''}
-                `;
-            }
-            grid.innerHTML += `
-                <div class="card">
-                    <div>
-                        <span class="impacto impacto-${a.impacto.toLowerCase()}">${a.impacto} Impacto</span>
-                        <div class="icon">${a.icon}</div>
-                        <h3>${a.nome}</h3>
-                        <p class="pts">+${a.pts} Pontos</p>
-                    </div>
-                    <div class="footer-card">${controleHTML}</div>
-                </div>`;
+        acoes.forEach((a, i) => {
+            const s = statusMap[a.nome];
+            let html = s === 'pendente' ? '<div class="status-badge pendente">⏳ Pendente</div>' : 
+                       s === 'aprovada' ? '<div class="status-badge aprovado">✅ Concluído</div>' :
+                       `<input type="file" id="f-${i}" style="font-size:0.7rem; margin:10px 0;"><button class="btn-enviar" onclick="enviar(${i})">Enviar</button>`;
+            grid.innerHTML += `<div class="card"><div><div style="font-size:2.5rem">${a.icon}</div><h3>${a.nome}</h3><span class="pts">${a.pts} pts</span></div>${html}</div>`;
         });
-    }
-
-    window.enviarAcao = async (index) => {
-        const fileInput = document.getElementById(`file-${index}`);
-        if (!fileInput.files[0]) return alert("Por favor, selecione uma foto!");
-        const acao = acoes[index];
-        try {
-            const base64 = await comprimirImagem(fileInput.files[0]);
-            const snapUser = await getDoc(doc(db, "usuarios", userGlobal.uid));
-            const dadosUser = snapUser.exists() ? snapUser.data() : {};
-
-            await addDoc(collection(db, "acoes_pendentes"), {
-                uid: userGlobal.uid,
-                email: userGlobal.email,
-                nome: dadosUser.nome || "Aluno",
-                curso: dadosUser.curso || "-",
-                acao: acao.nome,
-                pontos: acao.pts,
-                impacto: acao.impacto,
-                comprovanteBase64: base64,
-                status: "pendente",
-                criadoEm: serverTimestamp()
-            });
-
-            alert("Sucesso! Aguarde a validação do administrador.");
-            location.reload(); 
-        } catch (err) { alert("Erro ao enviar: " + err.message); }
-    };
-
-    function comprimirImagem(file) {
-        return new Promise((resolve) => {
+        window.enviar = async (idx) => {
+            const file = document.getElementById(`f-${idx}`).files[0];
+            if(!file) return alert("Selecione a foto!");
             const reader = new FileReader();
             reader.readAsDataURL(file);
-            reader.onload = (e) => {
-                const img = new Image();
-                img.src = e.target.result;
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    const MAX_WIDTH = 600; 
-                    const scaleSize = MAX_WIDTH / img.width;
-                    canvas.width = MAX_WIDTH;
-                    canvas.height = img.height * scaleSize;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    resolve(canvas.toDataURL('image/jpeg', 0.6));
-                };
+            reader.onload = async (e) => {
+                await addDoc(collection(db, "acoes_pendentes"), { uid:user.uid, email:user.email, acao:acoes[idx].nome, pontos:acoes[idx].pts, status:"pendente", comprovanteBase64: e.target.result, criadoEm: serverTimestamp() });
+                alert("Enviado!"); location.reload();
             };
-        });
-    }
-
-    document.getElementById("btnLogout").onclick = () => signOut(auth).then(() => location.href='login.html');
+        };
+    });
 </script>
 </body>
 </html>
-            align-items: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15); 
-            position: sticky; 
-            top: 0; 
-            z-index: 100; 
-        }
-
-        header h1 { margin: 0; font-size: 1.6rem; font-weight: 700; }
-
-        nav { 
-            margin-top: 15px; 
-            display: flex; 
-            justify-content: center; 
-            gap: 12px; 
-        }
-
-        nav button { 
-            background: rgba(255,255,255,0.15); 
-            border: 1px solid rgba(255,255,255,0.3); 
-            color: white; 
-            padding: 8px 18px; 
-            border-radius: 12px; 
-            cursor: pointer; 
-            font-family: 'Poppins', sans-serif;
-            font-size: 0.85rem;
-            transition: 0.3s; 
-        }
-
-        nav button:hover { background: rgba(255,255,255,0.3); transform: translateY(-2px); }
-
-        .container { max-width: 1100px; margin: 40px auto; padding: 0 20px; }
-
-        h2 { text-align: center; color: var(--p); margin-bottom: 35px; font-weight: 700; }
-
-        /* GRID DE CARDS */
-        .grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
-            gap: 25px; 
-        }
-
-        .card { 
-            background: var(--white); 
-            border-radius: 24px; 
-            padding: 25px; 
-            text-align: center; 
-            box-shadow: var(--shadow); 
-            transition: all 0.3s ease; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: space-between;
-            border: 1px solid rgba(0,0,0,0.03);
-        }
-
-        .card:hover { transform: translateY(-8px); box-shadow: 0 15px 35px rgba(0,0,0,0.1); }
-
-        /* TAGS DE IMPACTO */
-        .impacto { 
-            font-size: 10px; 
-            text-transform: uppercase; 
-            padding: 5px 12px; 
-            border-radius: 20px; 
-            font-weight: 700; 
-            display: inline-block; 
-            margin-bottom: 15px; 
-            letter-spacing: 0.5px;
-        }
-
-        .impacto-baixo { background: #e3f2fd; color: #1976d2; }
-        .impacto-médio { background: #fff3e0; color: #ef6c00; }
-        .impacto-alto { background: #fbe9e7; color: #d84315; }
-
-        .icon { font-size: 45px; margin: 10px 0; display: block; }
-        
-        h3 { font-size: 1.1rem; margin: 10px 0; color: #444; line-height: 1.4; }
-
-        .pts { 
-            font-weight: 700; 
-            color: var(--p); 
-            font-size: 1.2rem; 
-            background: #f0f7f0;
-            display: inline-block;
-            padding: 4px 15px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-        }
-
-        /* STATUS E INPUTS */
-        .status-badge { 
-            margin-top: 10px; 
-            padding: 12px; 
-            border-radius: 12px; 
-            font-size: 0.85rem; 
-            font-weight: 600; 
-        }
-
-        .pendente { background: #fffde7; color: #fbc02d; border: 1px solid #fff9c4; }
-        .aprovado { background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
-
-        input[type="file"] { 
-            font-size: 0.75rem; 
-            margin: 15px 0; 
-            width: 100%; 
-            color: #777;
-        }
-
-        .btn-enviar { 
-            background: var(--p); 
-            color: white; 
-            border: none; 
-            padding: 12px; 
-            border-radius: 12px; 
-            cursor: pointer; 
-            width: 100%; 
-            font-weight: 600; 
-            font-family: 'Poppins', sans-serif;
-            transition: 0.3s;
-            box-shadow: 0 4px 12px rgba(46, 125, 50, 0.2);
-        }
-
-        .btn-enviar:hover { background: var(--s); transform: scale(1.02); }
-        .btn-enviar:disabled { background: #ccc; cursor: not-allowed; box-shadow: none; }
-
-        /* Estilo responsivo */
-        @media (max-width: 600px) {
-            header h1 { font-size: 1.3rem; }
-            .grid { gap: 15px; }
-        }
-    </style>
-</head>
-<body>
-
-<header>
-    <h1>🌱 EcoAção Acadêmica</h1>
-    <nav>
-        <button onclick="window.location.href='dashboard.html'">Dashboard</button>
-        <button onclick="window.location.href='ranking.html'">Ranking</button>
-        <button id="btnLogout" style="background: rgba(255,0,0,0.2);">Sair</button>
-    </nav>
-</header>
-
-<div class="container">
-    <h2>Ações Disponíveis</h2>
-    <div class="grid" id="listaAcoes"></div>
-</div>
-
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
-    import { getFirestore, collection, addDoc, query, where, getDocs, serverTimestamp, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
-
-    /* 🔥 SUA CONFIGURAÇÃO ORIGINAL RECUPERADA 🔥 */
-    const firebaseConfig = {
-      apiKey: "AIzaSyAgKsk6jSIQk7AQ35xmVpnSn84pU8ca0g8",
-      authDomain: "ecoacao-eda80.firebaseapp.com",
-      projectId: "ecoacao-eda80"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    let userGlobal = null;
-    let acoesStatus = {}; 
-
-    // Lista completa das suas ações
-    const acoes = [
-        {nome:'Separar corretamente resíduos recicláveis',pts:20,impacto:'Baixo',icon:'♻️'},
-        {nome:'Utilizar sacolas reutilizáveis',pts:20,impacto:'Baixo',icon:'🛍️'},
-        {nome:'Utilizar copos reutilizáveis',pts:20,impacto:'Baixo',icon:'🥤'},
-        {nome:'Utilizar talheres reutilizáveis',pts:20,impacto:'Baixo',icon:'🍴'},
-        {nome:'Reutilizar embalagens',pts:30,impacto:'Baixo',icon:'📦'},
-        {nome:'Levar recicláveis a ponto de coleta',pts:40,impacto:'Médio',icon:'🚮'},
-        {nome:'Priorizar produtos com embalagem sustentável',pts:40,impacto:'Médio',icon:'🛒'},
-        {nome:'Utilizar transporte coletivo',pts:30,impacto:'Médio',icon:'🚌'},
-        {nome:'Deslocar-se a pé',pts:30,impacto:'Médio',icon:'🚶'},
-        {nome:'Compartilhar carona',pts:40,impacto:'Médio',icon:'🚗'},
-        {nome:'Destinar pilhas e baterias corretamente',pts:50,impacto:'Alto',icon:'🔋'},
-        {nome:'Destinar resíduos eletrônicos',pts:70,impacto:'Alto',icon:'💻'},
-        {nome:'Produzir material artesanal reutilizando resíduos',pts:60,impacto:'Alto',icon:'🎨'},
-        {nome:'Entregar óleo de cozinha em ponto de coleta',pts:80,impacto:'Alto',icon:'🛢️'},
-        {nome:'Reutilizar água',pts:70,impacto:'Alto',icon:'💧'},
-        {nome:'Utilizar bicicleta',pts:50,impacto:'Alto',icon:'🚲'},
-        {nome:'Plantar muda ou árvore',pts:100,impacto:'Alto',icon:'🌳'},
-        {nome:'Cuidar de horta caseira ou comunitária',pts:80,impacto:'Alto',icon:'🌱'},
-        {nome:'Participar de mutirão de limpeza',pts:70,impacto:'Alto',icon:'🧹'},
-        {nome:'Participar de eventos de educação ambiental',pts:50,impacto:'Alto',icon:'🎓'}
-    ];
-
-    onAuthStateChanged(auth, async (user) => {
-        if (user) {
-            userGlobal = user;
-            // Verifica se é admin para redirecionar (opcional)
-            const snap = await getDoc(doc(db, "usuarios", user.uid));
-            if (snap.exists() && snap.data().admin === true) {
-                 window.location.href = "admin.html";
-                 return;
-            }
-            await carregarStatusDoUsuario();
-            renderAcoes();
-        } else {
-            window.location.href = "login.html";
-        }
-    });
-
-    async function carregarStatusDoUsuario() {
-        const q = query(collection(db, "acoes_pendentes"), where("uid", "==", userGlobal.uid));
-        const querySnapshot = await getDocs(q);
-        acoesStatus = {};
-        querySnapshot.forEach((doc) => {
-            const data = doc.data();
-            // Guarda o status (pendente/aprovada/rejeitada)
-            acoesStatus[data.acao] = data.status;
-        });
-    }
-
-    function renderAcoes() {
-        const grid = document.getElementById("listaAcoes");
-        grid.innerHTML = "";
-
-        acoes.forEach((a, index) => {
-            const status = acoesStatus[a.nome];
-            let controleHTML = '';
-            let cardClass = "card";
-
-            if (status === 'pendente') {
-                controleHTML = `<div class="status-badge pendente">⏳ Aguardando Aprovação</div>`;
-            } else if (status === 'aprovada') {
-                controleHTML = `<div class="status-badge aprovado">✅ Ação Concluída</div>`;
-                cardClass += " card-concluido"; // Pode estilizar se quiser
-            } else {
-                // Se não tem envio ou foi rejeitada
-                controleHTML = `
-                    <input type="file" id="file-${index}" accept="image/*">
-                    <button class="btn-enviar" onclick="enviarAcao(${index})">Enviar Comprovante</button>
-                    ${status === 'rejeitada' ? '<small style="color:red; display:block; margin-top:5px">Último envio rejeitado. Tente novamente.</small>' : ''}
-                `;
-            }
-
-            grid.innerHTML += `
-                <div class="${cardClass}">
-                    <div>
-                        <span class="impacto impacto-${a.impacto.toLowerCase()}">${a.impacto} Impacto</span>
-                        <div class="icon">${a.icon}</div>
-                        <h3>${a.nome}</h3>
-                        <p class="pts">+${a.pts} Pontos</p>
-                    </div>
-                    <div class="footer-card">
-                        ${controleHTML}
-                    </div>
-                </div>
-            `;
-        });
-    }
-
-    window.enviarAcao = async (index) => {
-        const fileInput = document.getElementById(`file-${index}`);
-        if (!fileInput.files[0]) return alert("Por favor, selecione uma foto!");
-        const acao = acoes[index];
-        try {
-            const base64 = await comprimirImagem(fileInput.files[0]);
-            
-            // Busca dados extras do usuário no banco se necessário, ou usa info básica
-            const snapUser = await getDoc(doc(db, "usuarios", userGlobal.uid));
-            const dadosUser = snapUser.exists() ? snapUser.data() : {};
-
-            await addDoc(collection(db, "acoes_pendentes"), {
-                uid: userGlobal.uid,
-                email: userGlobal.email,
-                nome: dadosUser.nome || "Aluno",
-                curso: dadosUser.curso || "-",
-                acao: acao.nome,
-                pontos: acao.pts,
-                impacto: acao.impacto,
-                comprovanteBase64: base64, // Mantendo padrão do seu código antigo
-                status: "pendente",
-                criadoEm: serverTimestamp()
-            });
-
-            alert("Sucesso! Aguarde a validação do administrador.");
-            location.reload(); 
-        } catch (err) {
-            console.error(err);
-            alert("Erro ao enviar: " + err.message);
-        }
-    };
-
-    function comprimirImagem(file) {
-        return new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = (event) => {
-                const img = new Image();
-                img.src = event.target.result;
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    const MAX_WIDTH = 600; 
-                    const scaleSize = MAX_WIDTH / img.width;
-                    canvas.width = MAX_WIDTH;
-                    canvas.height = img.height * scaleSize;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    resolve(canvas.toDataURL('image/jpeg', 0.6));
-                };
-            };
-        });
-    }
-
-    document.getElementById("btnLogout").onclick = () => signOut(auth);
-</script>
-</body>
-</html>
-
-

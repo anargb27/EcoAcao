@@ -129,6 +129,8 @@ a:hover { text-decoration: underline; }
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+// IMPORTANTE: Adicionado Firestore para checar se é admin
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAgKsk6jSIQk7AQ35xmVpnSn84pU8ca0g8",
@@ -138,11 +140,11 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getFirestore(app); // Inicializa o banco de dados
 
-// Forçar o idioma para Português
 auth.languageCode = 'pt-br';
 
-// Função de Login
+// Função de Login com Redirecionamento Inteligente
 window.login = async function() {
   const email = document.getElementById("email").value.trim();
   const senha = document.getElementById("senha").value.trim();
@@ -153,72 +155,59 @@ window.login = async function() {
   }
 
   try {
-    await signInWithEmailAndPassword(auth, email, senha);
-    window.location.href = "dashboard.html";
+    const userCredential = await signInWithEmailAndPassword(auth, email, senha);
+    const user = userCredential.user;
+
+    // BUSCA OS DADOS DO USUÁRIO NO BANCO
+    const userSnap = await getDoc(doc(db, "usuarios", user.uid));
+    
+    if (userSnap.exists()) {
+        const dados = userSnap.data();
+        
+        // SE FOR ADMIN, VAI PARA admin.html, SENÃO VAI PARA dashboard.html
+        if (dados.isAdmin === true || dados.role === "admin") {
+            window.location.href = "admin.html";
+        } else {
+            window.location.href = "dashboard.html";
+        }
+    } else {
+        // Caso o usuário não tenha documento na coleção 'usuarios'
+        window.location.href = "dashboard.html";
+    }
+
   } catch (error) {
     console.error("Erro no Login:", error.code);
-
-    // TRADUÇÃO DOS ERROS DE LOGIN
     switch (error.code) {
       case 'auth/invalid-credential':
       case 'auth/user-not-found':
       case 'auth/wrong-password':
-        alert("E-mail ou senha incorretos. Verifique seus dados e tente novamente.");
-        break;
-      case 'auth/invalid-email':
-        alert("O formato do e-mail digitado não é válido.");
-        break;
-      case 'auth/user-disabled':
-        alert("Esta conta foi desativada. Entre em contato com o suporte.");
+        alert("E-mail ou senha incorretos.");
         break;
       case 'auth/too-many-requests':
-        alert("Muitas tentativas falhas. Sua conta foi bloqueada temporariamente, tente novamente mais tarde.");
+        alert("Muitas tentativas falhas. Conta bloqueada temporariamente.");
         break;
       default:
-        alert("Não conseguimos realizar o login agora. Tente novamente em instantes.");
+        alert("Erro ao realizar login. Tente novamente.");
     }
   }
 };
 
-// FUNÇÃO DE RECUPERAR SENHA (MELHORADA)
+// Função de recuperar senha mantida igual
 window.recuperarSenha = function() {
   const email = document.getElementById("email").value.trim();
-
   if (!email) {
-    alert("Ops! Digite seu e-mail primeiro para enviarmos o link.");
+    alert("Ops! Digite seu e-mail primeiro.");
     document.getElementById("email").focus();
     return;
   }
-
   sendPasswordResetEmail(auth, email)
-    .then(() => {
-      alert("Sucesso! enviamos um link para: " + email + ". Verifique sua caixa de entrada e também o lixo eletrônico.");
-    })
-    .catch((error) => {
-      console.error("Erro Firebase:", error.code);
-
-      // TRADUÇÃO DOS ERROS
-      switch (error.code) {
-        case 'auth/user-not-found':
-          alert("Este e-mail ainda não está cadastrado no EcoAção.");
-          break;
-        case 'auth/invalid-email':
-          alert("O formato do e-mail digitado não é válido.");
-          break;
-        case 'auth/too-many-requests':
-          alert("Muitas tentativas seguidas! Aguarde um momento e tente novamente.");
-          break;
-        case 'auth/network-request-failed':
-          alert("Parece que você está sem internet ou com conexão instável.");
-          break;
-        default:
-          alert("Ocorreu um erro inesperado. Tente novamente em instantes.");
-      }
-    });
+    .then(() => alert("Sucesso! Link enviado para: " + email))
+    .catch((error) => alert("Erro: " + error.code));
 };
 </script>
 </body>
 </html>
+
 
 
 

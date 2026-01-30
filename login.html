@@ -158,36 +158,30 @@ window.login = async function() {
     const userCredential = await signInWithEmailAndPassword(auth, email, senha);
     const user = userCredential.user;
 
-    // Busca os dados do usuário
+    // 1. Tenta buscar o documento
     const userSnap = await getDoc(doc(db, "usuarios", user.uid));
     
     if (userSnap.exists()) {
         const dados = userSnap.data();
         
-        // CORREÇÃO AQUI: Mudamos de 'isAdmin' para 'admin'
-        // Checa se o campo 'admin' é verdadeiro (aceita booleano ou texto)
-        if (dados.admin === true || dados.admin === "true") {
+        // ESTE ALERTA VAI NOS MOSTRAR O QUE HÁ NO BANCO:
+        // Ele vai exibir o que está escrito no campo 'admin'
+        alert("UID logado: " + user.uid + "\nValor do campo admin: " + dados.admin);
+
+        // 2. Teste de múltiplas variações (maiúsculo, minúsculo, texto ou booleano)
+        if (dados.admin === true || dados.admin === "true" || dados.Admin === true || dados.Admin === "true") {
             window.location.href = "admin.html";
         } else {
             window.location.href = "dashboard.html";
         }
     } else {
-        // Se não achar o documento, manda para o dashboard por padrão
+        alert("Erro: Não existe um documento na coleção 'usuarios' com o seu UID: " + user.uid);
         window.location.href = "dashboard.html";
     }
 
   } catch (error) {
-    console.error("Erro no Login:", error.code);
-    // ... seu switch de erros (invalid-credential, etc) continua aqui igual ...
-    switch (error.code) {
-      case 'auth/invalid-credential':
-      case 'auth/user-not-found':
-      case 'auth/wrong-password':
-        alert("E-mail ou senha incorretos.");
-        break;
-      default:
-        alert("Erro ao realizar login.");
-    }
+    console.error(error);
+    alert("Erro no Login: " + error.code);
   }
 };
     // TRADUÇÃO DOS ERROS DE LOGIN (Restaurei sua lógica)
@@ -250,6 +244,7 @@ window.recuperarSenha = function() {
 </script>
 </body>
 </html>
+
 
 
 

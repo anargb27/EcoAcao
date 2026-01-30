@@ -33,111 +33,109 @@
 <div class="container">
     <div class="grid" id="listaAcoes"></div>
 </div>
-<script type="module">
+    <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
-    import { getFirestore, collection, addDoc, query, where, getDocs, serverTimestamp, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
-    
-    const firebaseConfig = { apiKey: "AIzaSyAgKsk6jSIQk7AQ35xmVpnSn84pU8ca0g8", authDomain: "ecoacao-eda80.firebaseapp.com", projectId: "ecoacao-eda80" };
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+    import { getFirestore, collection, addDoc, query, where, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+    const firebaseConfig = { 
+        apiKey: "AIzaSyAgKsk6jSIQk7AQ35xmVpnSn84pU8ca0g8", 
+        authDomain: "ecoacao-eda80.firebaseapp.com", 
+        projectId: "ecoacao-eda80" 
+    };
+
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
     const acoes = [
-        // 💧 ÁGUA (Conquista: Gota de Ouro)
         {nome:'Água: Usar garrafa própria (reutilizável)', pts:15, icon:'🥤', impacto:'Baixo'},
-        {nome:'Água: Reutilizar Água Para Atividade Domésticas', pts:20, icon:'💦', impacto:'Baixo'}, // CORRIGIDO: Adicionada aspa após Domésticas
+        {nome:'Água: Reutilizar Água Para Atividade Domésticas', pts:20, icon:'💦', impacto:'Baixo'},
         {nome:'Água: Aproveitar a água da chuva', pts:40, icon:'🪣', impacto:'Médio'},
-
-        // ⚡ ENERGIA (Conquista: Faísca Verde)
         {nome:'Energia: Apagar luzes de cômodos vazios', pts:15, icon:'💡', impacto:'Baixo'},
         {nome:'Energia: Tirar eletrodomésticos da tomada após o uso', pts:15, icon:'🔌', impacto:'Baixo'},
         {nome:'Energia: Escolher a escada em vez do elevador', pts:20, icon:'🏃', impacto:'Baixo'},
-
-        // ♻️ RECICLA (Conquista: Eco-Mestre)
         {nome:'Reciclagem: Separar resíduos sólidos', pts:25, icon:'♻️', impacto:'Baixo'},
-        {nome:'Reciclagem: Encaminhar materiais recicláveis para coleta seletiva ou pontos de entrega voluntária', pts:50, icon:'♻️', impacto:'Alto'},
+        {nome:'Reciclagem: Encaminhar materiais para coleta seletiva', pts:50, icon:'♻️', impacto:'Alto'},
         {nome:'Reciclagem: Juntar pilhas ou baterias para descarte', pts:40, icon:'🔋', impacto:'Médio'},
-
-        // 🌱 PLANTA (Conquista: Mão de Terra)
         {nome:'Planta: Criar hortas ou jardins domésticos', pts:100, icon:'🌳', impacto:'Alto'},
         {nome:'Planta: Plantar uma Muda ou Semente', pts:40, icon:'🌿', impacto:'Médio'},
         {nome:'Planta: Criar uma composteira', pts:100, icon:'🌳', impacto:'Alto'},
-
-        // 📢 SOCIAL (Conquista: Voz do Eco)
         {nome:'Social: Convidar um colega para usar o app EcoAção', pts:40, icon:'🤝', impacto:'Médio'},
         {nome:'Social: Doar roupas que não usa mais', pts:50, icon:'👕', impacto:'Médio'},
         {nome:'Social: Doar livros ou apostilas antigas', pts:40, icon:'📚', impacto:'Médio'},
-
-        // 🧹 LIMPEZA (Conquista: Chão Limpo)
         {nome:'Limpeza: Juntar lixo espalhado pelo chão', pts:40, icon:'🧹', impacto:'Médio'},
         {nome:'Limpeza: Deixar a mesa do RU/Lanchonete limpa', pts:20, icon:'🍽️', impacto:'Baixo'},
         {nome:'Limpeza: Ajudar a limpar um canteiro ou praça', pts:70, icon:'✨', impacto:'Alto'},
-
-        // 📄 PAPEL (Conquista: Puro Papel)
         {nome:'Papel: Usar o verso de folhas como rascunho', pts:20, icon:'📄', impacto:'Baixo'},
         {nome:'Papel: Estudar por documentos digitais (sem imprimir)', pts:20, icon:'📱', impacto:'Baixo'},
         {nome:'Papel: Juntar papelão ou jornais para reciclagem', pts:30, icon:'📦', impacto:'Médio'},
-
-        // 🚲 TRANSPORTE (Conquista: Passo Leve)
         {nome:'Transporte: Vir para a faculdade a pé', pts:40, icon:'🚶', impacto:'Médio'},
         {nome:'Transporte: Vir para a faculdade de bicicleta', pts:50, icon:'🚲', impacto:'Alto'},
         {nome:'Transporte: Usar ônibus ou transporte público', pts:30, icon:'🚌', impacto:'Médio'},
-
-        // 🚫 PLÁSTICO (Conquista: Zero Plástico)
         {nome:'Plástico: Usar sacola de pano (Ecobag) para compras', pts:30, icon:'🛍️', impacto:'Médio'},
         {nome:'Plástico: Usar seus próprios talheres (reutilizáveis)', pts:30, icon:'🍴', impacto:'Médio'},
         {nome:'Plástico: Recusar canudinhos e copos descartáveis', pts:15, icon:'🥤', impacto:'Baixo'},
-
-        // 👑 EMBAIXADOR (Título Final)
         {nome:'Geral: Criar algo novo com material reciclado', pts:60, icon:'🎨', impacto:'Alto'},
         {nome:'Geral: Participar de uma palestra ambiental', pts:50, icon:'🎓', impacto:'Médio'},
-        {nome:'Geral: Completar 3 ações sustentáveis em um dia', pts:60, icon:'🔥', impacto:'Alto'} // Adicionado para fechar as 3 da categoria
+        {nome:'Geral: Completar 3 ações sustentáveis', pts:60, icon:'🔥', impacto:'Alto'}
     ];
 
     onAuthStateChanged(auth, async user => {
         if (!user) { location.href="login.html"; return; }
+
         const q = query(collection(db, "acoes_pendentes"), where("uid", "==", user.uid));
         const snap = await getDocs(q);
         const statusMap = {};
         snap.forEach(d => statusMap[d.data().acao] = d.data().status);
+
         const grid = document.getElementById("listaAcoes");
-        grid.innerHTML = ""; // Limpa o grid antes de renderizar
-        
+        grid.innerHTML = ""; // Garante que começa vazio
+
         acoes.forEach((a, i) => {
             const s = statusMap[a.nome];
-            let html = s === 'pendente' ? '<div class="status-badge pendente">⏳ Pendente</div>' : 
-                       s === 'aprovada' ? '<div class="status-badge aprovado">✅ Concluído</div>' :
-                       `<input type="file" id="f-${i}" accept="image/*" style="font-size:0.7rem; margin:10px 0;"><button class="btn-enviar" onclick="enviar(${idx = i})">Enviar</button>`;
-            
+            let htmlStatus = "";
+
+            if (s === 'pendente') {
+                htmlStatus = '<div class="status-badge pendente">⏳ Pendente</div>';
+            } else if (s === 'aprovada') {
+                htmlStatus = '<div class="status-badge aprovado">✅ Concluído</div>';
+            } else {
+                htmlStatus = `
+                    <input type="file" id="f-${i}" accept="image/*" style="font-size:0.7rem; margin:10px 0;">
+                    <button class="btn-enviar" onclick="enviarAcao(${i})">Enviar</button>
+                `;
+            }
+
             grid.innerHTML += `
                 <div class="card">
-                    <div>
-                        <div style="font-size:2.5rem">${a.icon}</div>
-                        <h3>${a.nome}</h3>
-                        <span class="pts">${a.pts} pts</span>
-                    </div>
-                    ${html}
+                    <div style="font-size:2.5rem">${a.icon}</div>
+                    <h3>${a.nome}</h3>
+                    <span class="pts">${a.pts} pts</span>
+                    ${htmlStatus}
                 </div>`;
         });
 
-        window.enviar = async (idx) => {
-            const file = document.getElementById(`f-${idx}`).files[0];
-            if(!file) return alert("Selecione a foto!");
+        // Função global para o botão funcionar
+        window.enviarAcao = async (idx) => {
+            const fileInput = document.getElementById(`f-${idx}`);
+            const file = fileInput.files[0];
+            if(!file) return alert("Selecione uma foto!");
+
             const reader = new FileReader();
             reader.readAsDataURL(file);
             reader.onload = async (e) => {
                 try {
                     await addDoc(collection(db, "acoes_pendentes"), { 
-                        uid:user.uid, 
-                        email:user.email, 
-                        acao:acoes[idx].nome, 
-                        pontos:acoes[idx].pts, 
-                        status:"pendente", 
+                        uid: user.uid, 
+                        email: user.email, 
+                        acao: acoes[idx].nome, 
+                        pontos: acoes[idx].pts, 
+                        status: "pendente", 
                         comprovanteBase64: e.target.result, 
                         criadoEm: serverTimestamp() 
                     });
-                    alert("Enviado com sucesso!"); 
+                    alert("Enviado para análise!"); 
                     location.reload();
                 } catch (err) {
                     alert("Erro ao enviar: " + err.message);
@@ -146,9 +144,9 @@
         };
     });
 </script>
-
 </body>
 </html>
+
 
 
 

@@ -26,7 +26,7 @@
             color: #333;
         }
         
-        /* HEADER MODERNO */
+        /* HEADER */
         .header { 
             background: var(--white); 
             padding: 15px 8%; 
@@ -63,16 +63,12 @@
 
         .btn-nova { background: var(--p); color: white; }
         .btn-nova:hover { background: var(--s); transform: translateY(-2px); }
-
         .btn-ranking { background: #e8f5e9; color: var(--p); }
-        .btn-ranking:hover { background: #c8e6c9; }
-
         .btn-sair { background: #feebee; color: #c62828; }
-        .btn-sair:hover { background: #fbd5d5; }
 
         .main { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
 
-        /* CARD DE PERFIL REESTILIZADO */
+        /* CARD DE PERFIL COM NÍVEL */
         .profile-box { 
             background: var(--white); 
             border-radius: 28px; 
@@ -80,7 +76,6 @@
             overflow: hidden; 
             box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
             margin-bottom: 40px;
-            border: 1px solid rgba(0,0,0,0.03);
         }
 
         .user-info { 
@@ -88,20 +83,15 @@
             flex: 1; 
             background: linear-gradient(135deg, #1b5e20, #43a047); 
             color: white;
-            position: relative;
         }
 
-        .user-info h2 { margin: 0; font-size: 2rem; font-weight: 700; line-height: 1.2; }
-        .user-info p { margin: 5px 0 0; opacity: 0.8; font-weight: 300; }
+        .user-info h2 { margin: 0; font-size: 2rem; font-weight: 700; }
         
-        .user-email-tag {
-            display: inline-block;
-            margin-top: 20px;
-            background: rgba(255,255,255,0.15);
-            padding: 4px 12px;
-            border-radius: 8px;
-            font-size: 0.75rem;
-        }
+        /* Barra de Nível */
+        .level-container { margin-top: 15px; }
+        .level-badge { background: #ffd700; color: #1b5e20; padding: 2px 10px; border-radius: 20px; font-weight: 700; font-size: 0.8rem; margin-bottom: 5px; display: inline-block; }
+        .progress-bar { width: 100%; height: 8px; background: rgba(255,255,255,0.2); border-radius: 10px; margin-top: 5px; position: relative; overflow: hidden;}
+        .progress-fill { height: 100%; background: #fff; width: 0%; transition: width 1s ease-in-out; }
 
         .user-score { 
             padding: 40px; 
@@ -117,54 +107,27 @@
         .score-num { font-size: 3.5rem; font-weight: 800; color: var(--p); line-height: 1; }
         .score-label { font-size: 0.7rem; color: #999; font-weight: 700; margin-top: 8px; letter-spacing: 1.5px; }
 
-        /* GRID DE AÇÕES */
-        .section-title { font-size: 1.2rem; font-weight: 600; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
-        
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
-        
-        .card-acao { 
-            background: var(--white); 
-            padding: 20px; 
-            border-radius: 20px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.04); 
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border: 1px solid #f0f0f0;
-        }
-        
-        .card-acao:hover { transform: translateY(-5px); box-shadow: 0 12px 25px rgba(0,0,0,0.1); }
+        /* CONQUISTAS */
+        .conquistas-grid { display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 30px; }
+        .badge { background: white; padding: 12px 20px; border-radius: 18px; display: flex; align-items: center; gap: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 2px solid #e8f5e9; animation: popIn 0.5s ease; }
+        .badge-text { font-size: 0.85rem; font-weight: 600; color: var(--p); }
 
-        .status-tag { 
-            font-size: 0.6rem; 
-            font-weight: 700; 
-            text-transform: uppercase; 
-            padding: 5px 12px; 
-            border-radius: 20px; 
-            margin-bottom: 15px; 
-            display: inline-block;
-        }
-        
+        /* HISTÓRICO */
+        .section-title { font-size: 1.2rem; font-weight: 600; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
+        .card-acao { background: var(--white); padding: 20px; border-radius: 20px; border: 1px solid #f0f0f0; transition: 0.3s; }
+        .card-acao:hover { transform: translateY(-5px); box-shadow: 0 12px 25px rgba(0,0,0,0.1); }
+        .status-tag { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; padding: 5px 12px; border-radius: 20px; display: inline-block; margin-bottom: 10px; }
         .pendente { background: #fff4e5; color: #b7791f; }
         .aprovada { background: #e8f5e9; color: #2e7d32; }
         .rejeitada { background: #ffebee; color: #c62828; }
+        .img-acao { width: 100%; height: 180px; object-fit: cover; border-radius: 15px; margin-top: 15px; background: #f9f9f9; }
 
-        .img-acao { 
-            width: 100%; 
-            height: 180px; 
-            object-fit: cover; 
-            border-radius: 15px; 
-            margin-top: 15px; 
-            background: #f9f9f9; 
-            border: 1px solid #eee;
-        }
+        @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
-        /* MOBILE */
         @media (max-width: 600px) {
-            .header { padding: 15px 5%; }
-            .logo { font-size: 1.1rem; }
-            .nav-btns button { padding: 8px 12px; font-size: 0.75rem; }
-            .profile-box { flex-direction: column; margin-bottom: 30px; }
-            .user-info { padding: 30px; text-align: center; }
-            .user-score { width: 100%; padding: 30px; border-top: 1px solid #f0f0f0; }
+            .profile-box { flex-direction: column; }
+            .user-score { width: 100%; border-top: 1px solid #f0f0f0; }
         }
     </style>
 </head>
@@ -183,8 +146,11 @@
         <div class="profile-box">
             <div class="user-info">
                 <h2 id="exibirNome">Carregando...</h2>
-                <p id="exibirCurso">---</p>
-                <div class="user-email-tag" id="exibirEmail">---</div>
+                <div class="level-container">
+                    <span class="level-badge" id="txtNivel">Nível 1 - Iniciante</span>
+                    <div class="progress-bar"><div class="progress-fill" id="barraProgresso"></div></div>
+                </div>
+                <p id="exibirCurso" style="margin-top:15px; opacity:0.9">Curso: ---</p>
             </div>
             <div class="user-score">
                 <div class="score-num" id="exibirPontos">0</div>
@@ -192,9 +158,11 @@
             </div>
         </div>
 
-        <div class="section-title">📋 Meu Histórico de Ações</div>
-        <div id="containerAcoes" class="grid">
-            </div>
+        <div class="section-title">🏆 Minhas Conquistas</div>
+        <div id="conquistasContainer" class="conquistas-grid"></div>
+
+        <div class="section-title">📋 Histórico de Ações</div>
+        <div id="containerAcoes" class="grid"></div>
     </main>
 
 <script type="module">
@@ -208,83 +176,111 @@
         projectId: "ecoacao-eda80"
     };
 
-    // Inicializar Firebase com tratamento de erro
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
     onAuthStateChanged(auth, async (user) => {
-        if (!user) {
-            window.location.href = "login.html";
-            return;
-        }
+        if (!user) { window.location.href = "login.html"; return; }
 
         try {
             const userRef = doc(db, "usuarios", user.uid);
-            const userSnap = await getDoc(userRef);
+            
+            // Ouvinte em tempo real para os dados do usuário (pontos)
+            onSnapshot(userRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    const dados = docSnap.data();
+                    if (dados.admin) { window.location.replace("admin.html"); return; }
 
-            if (userSnap.exists()) {
-                const dados = userSnap.data();
+                    document.getElementById("dashboardBody").style.visibility = "visible";
+                    document.getElementById("exibirNome").innerText = dados.nome || "Usuário";
+                    document.getElementById("exibirCurso").innerText = "Curso: " + (dados.curso || "Não informado");
+                    document.getElementById("exibirPontos").innerText = dados.pontos || 0;
 
-                // 1. SEGURANÇA: Se for admin, não entra aqui
-                if (dados.admin === true) {
-                    window.location.replace("admin.html");
+                    calcularNivel(dados.pontos || 0);
+                }
+            });
+
+            // Ouvinte para as ações (Conquistas e Cards)
+            const q = query(collection(db, "acoes_pendentes"), where("uid", "==", user.uid));
+            onSnapshot(q, (snapshot) => {
+                const container = document.getElementById("containerAcoes");
+                const conquistasContainer = document.getElementById("conquistasContainer");
+                container.innerHTML = "";
+                conquistasContainer.innerHTML = "";
+
+                let contagem = { agua: 0, plantas: 0, reciclagem: 0 };
+
+                if (snapshot.empty) {
+                    container.innerHTML = "<p>Nenhuma ação enviada ainda.</p>";
                     return;
                 }
 
-                // 2. MOSTRAR TELA
-                document.getElementById("dashboardBody").style.visibility = "visible";
-
-                // 3. PREENCHER DADOS
-                document.getElementById("exibirNome").innerText = dados.nome || "Usuário";
-                document.getElementById("exibirCurso").innerText = "Curso: " + (dados.curso || "Não informado");
-                document.getElementById("exibirEmail").innerText = user.email;
-                document.getElementById("exibirPontos").innerText = dados.pontos || 0;
-
-                // 4. CARREGAR AÇÕES EM TEMPO REAL
-                const q = query(collection(db, "acoes_pendentes"), where("uid", "==", user.uid));
-                onSnapshot(q, (snapshot) => {
-                    const container = document.getElementById("containerAcoes");
-                    container.innerHTML = "";
+                snapshot.forEach(docAcao => {
+                    const acao = docAcao.data();
                     
-                    if (snapshot.empty) {
-                        container.innerHTML = "<p style='color:#666'>Você ainda não enviou ações.</p>";
-                        return;
+                    if (acao.status === 'aprovada') {
+                        const nome = acao.acao.toLowerCase();
+                        if (nome.includes("agua") || nome.includes("água")) contagem.agua++;
+                        if (nome.includes("planta") || nome.includes("arvore") || nome.includes("árvore")) contagem.plantas++;
+                        if (nome.includes("recicla")) contagem.reciclagem++;
                     }
 
-                    snapshot.forEach(docAcao => {
-                        const acao = docAcao.data();
-                        const card = document.createElement("div");
-                        card.className = "card-acao";
-                        
-                        const statusClass = acao.status === 'aprovada' ? 'aprovada' : (acao.status === 'rejeitada' ? 'rejeitada' : 'pendente');
-                        
-                        card.innerHTML = `
-                            <span class="status-tag ${statusClass}">${acao.status || 'pendente'}</span>
-                            <div style="font-weight:bold; color:#333">${acao.acao}</div>
-                            <div style="font-size:0.85rem; color:#666">Valor: ${acao.pontos} pontos</div>
-                            ${acao.comprovanteBase64 ? `<img src="${acao.comprovanteBase64}" class="img-acao">` : ''}
-                            ${acao.motivoRejeicao ? `<p style="color:red; font-size:0.75rem; margin-top:10px"><b>Motivo:</b> ${acao.motivoRejeicao}</p>` : ''}
-                        `;
-                        container.appendChild(card);
-                    });
+                    const card = document.createElement("div");
+                    card.className = "card-acao";
+                    const statusClass = acao.status === 'aprovada' ? 'aprovada' : (acao.status === 'rejeitada' ? 'rejeitada' : 'pendente');
+                    card.innerHTML = `
+                        <span class="status-tag ${statusClass}">${acao.status || 'pendente'}</span>
+                        <div style="font-weight:bold">${acao.acao}</div>
+                        <div style="font-size:0.8rem; color:#666">${acao.pontos} pontos</div>
+                        ${acao.comprovanteBase64 ? `<img src="${acao.comprovanteBase64}" class="img-acao">` : ''}
+                    `;
+                    container.appendChild(card);
                 });
 
-            } else {
-                alert("Erro: Cadastro não encontrado no banco de dados.");
-                await signOut(auth);
-                window.location.href = "login.html";
-            }
-        } catch (error) {
-            console.error("Erro no Dashboard:", error);
-        }
+                // Renderizar Conquistas
+                if (contagem.agua >= 3) adicionarBadge("💧 Protetor de Nascentes", conquistasContainer);
+                if (contagem.plantas >= 3) adicionarBadge("🌱 Broto da Esperança", conquistasContainer);
+                if (contagem.reciclagem >= 3) adicionarBadge("♻️ Mestre do Ciclo", conquistasContainer);
+                
+                if (Object.values(contagem).every(v => v === 0)) {
+                    conquistasContainer.innerHTML = "<p style='color:#999; font-size:0.8rem'>Aprove ações para ganhar títulos!</p>";
+                }
+            });
+
+        } catch (e) { console.error(e); }
     });
 
-    window.fazerLogout = () => {
-        signOut(auth).then(() => { window.location.href = "login.html"; });
-    };
+    function calcularNivel(pontos) {
+        let nivel = "";
+        let progresso = 0;
+        
+        if (pontos < 100) {
+            nivel = "Nível 1 - Iniciante";
+            progresso = (pontos / 100) * 100;
+        } else if (pontos < 300) {
+            nivel = "Nível 2 - Eco-Ativista";
+            progresso = ((pontos - 100) / 200) * 100;
+        } else if (pontos < 600) {
+            nivel = "Nível 3 - Guardião Verde";
+            progresso = ((pontos - 300) / 300) * 100;
+        } else {
+            nivel = "Nível Máximo - Herói do Planeta";
+            progresso = 100;
+        }
+        
+        document.getElementById("txtNivel").innerText = nivel;
+        document.getElementById("barraProgresso").style.width = progresso + "%";
+    }
+
+    function adicionarBadge(texto, container) {
+        const div = document.createElement("div");
+        div.className = "badge";
+        div.innerHTML = `<span class="badge-text">${texto}</span>`;
+        container.appendChild(div);
+    }
+
+    window.fazerLogout = () => { signOut(auth).then(() => { window.location.href = "login.html"; }); };
 </script>
 </body>
 </html>
-
-
